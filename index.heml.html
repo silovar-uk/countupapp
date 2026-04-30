@@ -1,0 +1,1612 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#eef2f7" />
+  <title>Pocket Count</title>
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --bg-2: #f7f9fc;
+      --surface: rgba(255, 255, 255, .78);
+      --surface-solid: #ffffff;
+      --surface-soft: rgba(255, 255, 255, .58);
+      --ink: #172033;
+      --ink-soft: #334155;
+      --muted: #7b8798;
+      --muted-2: #9aa6b8;
+      --line: rgba(23, 32, 51, .10);
+      --line-strong: rgba(23, 32, 51, .16);
+      --accent: #3b82f6;
+      --accent-2: #2563eb;
+      --accent-soft: rgba(59, 130, 246, .12);
+      --game: #6d5dfc;
+      --game-soft: rgba(109, 93, 252, .12);
+      --danger: #e87575;
+      --danger-soft: rgba(232, 117, 117, .12);
+      --ok: #35c99f;
+      --ok-soft: rgba(53, 201, 159, .14);
+      --radius-xl: 28px;
+      --shadow: 0 18px 48px rgba(38, 53, 84, .12);
+      --shadow-soft: 0 10px 26px rgba(38, 53, 84, .09);
+      --blur: blur(18px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+      touch-action: manipulation;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      color: var(--ink);
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 14% 0%, rgba(109, 93, 252, .16), transparent 32vw),
+        radial-gradient(circle at 88% 10%, rgba(59, 130, 246, .16), transparent 34vw),
+        linear-gradient(180deg, #f7f9fc 0%, #eef2f7 46%, #e8edf5 100%);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    input,
+    textarea {
+      font-size: 16px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      transition: transform .08s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease;
+    }
+
+    button:active {
+      transform: scale(.985);
+    }
+
+    .app {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: 14px 14px calc(24px + env(safe-area-inset-bottom));
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 0 -14px;
+      padding: 12px 14px 14px;
+      border-bottom: 1px solid rgba(23, 32, 51, .08);
+      background: rgba(247, 249, 252, .78);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+    }
+
+    .top-row,
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-row {
+      justify-content: space-between;
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+      color: var(--game);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 58vw;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--ink);
+      font-size: clamp(24px, 7vw, 34px);
+      line-height: 1.05;
+      letter-spacing: -.045em;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface-solid);
+      color: var(--ink-soft);
+      font-weight: 900;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .icon-btn.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 12px 26px rgba(59, 130, 246, .20);
+    }
+
+    .icon-btn:disabled {
+      opacity: .38;
+      box-shadow: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .stat {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      padding: 10px;
+      box-shadow: 0 8px 20px rgba(38, 53, 84, .07);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .02em;
+    }
+
+    .stat-value {
+      margin-top: 2px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--ink);
+      font-size: 25px;
+      font-weight: 950;
+      letter-spacing: -.05em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-value.small {
+      padding-top: 3px;
+      font-size: 18px;
+      letter-spacing: -.04em;
+    }
+
+    .boards-wrap {
+      overflow-x: auto;
+      margin: 14px -14px 0;
+      padding: 0 14px 4px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .boards-wrap::-webkit-scrollbar,
+    .preset-row::-webkit-scrollbar,
+    .target-presets::-webkit-scrollbar {
+      display: none;
+    }
+
+    .boards {
+      display: flex;
+      gap: 8px;
+      width: max-content;
+      padding-right: 14px;
+    }
+
+    .board-tab {
+      min-width: 116px;
+      max-width: 172px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 11px 13px;
+      text-align: left;
+      box-shadow: 0 8px 18px rgba(38, 53, 84, .06);
+    }
+
+    .board-tab.is-active {
+      border-color: rgba(59, 130, 246, .34);
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(59, 130, 246, .20);
+    }
+
+    .board-name,
+    .board-sub {
+      display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .board-name {
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .board-sub {
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .board-tab.is-active .board-sub {
+      color: rgba(255, 255, 255, .76);
+    }
+
+    .panel {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      padding: 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+    }
+
+    .target-strip {
+      margin-top: 10px;
+      border: 1px solid rgba(23, 32, 51, .08);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .54);
+      box-shadow: 0 8px 20px rgba(38, 53, 84, .06);
+      overflow: hidden;
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+    }
+
+    .target-summary {
+      width: 100%;
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px 8px 12px;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .target-summary-main {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .target-summary-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .target-summary-value {
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 1000;
+      letter-spacing: -.05em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .target-summary-sub {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .target-edit-pill {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-2);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .target-detail {
+      display: none;
+      border-top: 1px solid rgba(23, 32, 51, .08);
+      padding: 10px;
+    }
+
+    .target-strip.is-open .target-detail {
+      display: block;
+    }
+
+    .target-help {
+      margin: 0 2px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.55;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .panel-title {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .panel-note {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.55;
+    }
+
+    .pill-count {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--game-soft);
+      color: #5144c8;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .target-actions {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 1px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .target-actions::-webkit-scrollbar {
+      display: none;
+    }
+
+    .target-btn {
+      height: 38px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 0 13px;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .target-btn.dark {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .target-btn.gray {
+      background: rgba(148, 163, 184, .16);
+      color: var(--ink-soft);
+    }
+
+    .target-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .target-chip {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 12px 0 10px;
+      background: rgba(148, 163, 184, .14);
+      color: var(--ink-soft);
+      font-size: 13px;
+      font-weight: 950;
+      max-width: 100%;
+    }
+
+    .target-chip.on {
+      border-color: rgba(59, 130, 246, .24);
+      background: var(--accent-soft);
+      color: var(--accent-2);
+    }
+
+    .chip-mark {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #cbd5e1;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 1000;
+    }
+
+    .target-chip.on .chip-mark {
+      background: var(--accent);
+    }
+
+    .chip-label {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .text-input,
+    .memo {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: rgba(248, 250, 252, .92);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .text-input {
+      height: 48px;
+      padding: 0 13px;
+    }
+
+    .text-input:focus,
+    .memo:focus {
+      border-color: rgba(59, 130, 246, .56);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, .12);
+    }
+
+    .text-input::placeholder,
+    .memo::placeholder {
+      color: var(--muted-2);
+    }
+
+    .small-btn {
+      height: 48px;
+      flex: 0 0 auto;
+      border-radius: 17px;
+      padding: 0 14px;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(23, 32, 51, .14);
+    }
+
+    .small-btn.blue {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(59, 130, 246, .18);
+    }
+
+    .preset-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 10px -2px -2px;
+      padding: 2px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .preset-btn {
+      height: 38px;
+      flex: 0 0 auto;
+      border: 1px solid rgba(109, 93, 252, .18);
+      border-radius: 999px;
+      background: var(--game-soft);
+      color: #5144c8;
+      padding: 0 13px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .counter-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .counter-card {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--surface);
+      padding: 10px;
+      box-shadow: var(--shadow);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+    }
+
+    .counter-grid {
+      display: grid;
+      grid-template-columns: 1fr 50px;
+      gap: 9px;
+      align-items: stretch;
+    }
+
+    .count-main {
+      min-height: 112px;
+      border: 1px solid rgba(23, 32, 51, .08);
+      border-radius: 23px;
+      background: var(--surface-solid);
+      color: var(--ink);
+      padding: 14px;
+      text-align: left;
+      overflow: hidden;
+      box-shadow: 0 8px 22px rgba(38, 53, 84, .07);
+    }
+
+    .counter-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .counter-label {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: -.03em;
+    }
+
+    .plus-badge {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 16px;
+      background: var(--accent-soft);
+      color: var(--accent-2);
+      font-size: 22px;
+      font-weight: 950;
+    }
+
+    .count-line {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .count-value {
+      color: var(--ink);
+      font-size: clamp(54px, 16vw, 72px);
+      font-weight: 1000;
+      line-height: .88;
+      letter-spacing: -.095em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ratio {
+      padding-bottom: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .bar {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e4eaf3;
+      margin-top: 14px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+      transition: width .12s linear;
+    }
+
+    .bar-fill.off {
+      width: 0 !important;
+      background: #cbd5e1;
+    }
+
+    .side-actions {
+      display: grid;
+      gap: 7px;
+    }
+
+    .side-btn {
+      min-height: 45px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface-soft);
+      color: var(--ink-soft);
+      font-size: 18px;
+      font-weight: 950;
+      box-shadow: 0 8px 18px rgba(38, 53, 84, .05);
+    }
+
+    .side-btn.ok {
+      background: var(--ok-soft);
+      color: #12775d;
+      border-color: rgba(53, 201, 159, .20);
+    }
+
+    .side-btn.danger {
+      color: #c94f4f;
+      background: var(--danger-soft);
+      border-color: rgba(232, 117, 117, .18);
+    }
+
+    .count-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .count-badge.on {
+      background: var(--accent-soft);
+      color: var(--accent-2);
+    }
+
+    .count-badge.off {
+      background: rgba(148, 163, 184, .16);
+      color: var(--muted);
+    }
+
+    .edit-input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid rgba(59, 130, 246, .26);
+      border-radius: 13px;
+      background: #f8fafc;
+      color: var(--ink);
+      padding: 0 10px;
+      font-size: 18px;
+      font-weight: 950;
+      outline: none;
+    }
+
+    .memo-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 9px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .memo {
+      min-height: 112px;
+      resize: vertical;
+      padding: 13px;
+      line-height: 1.65;
+    }
+
+    .tools {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tool-btn {
+      height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: var(--surface);
+      color: var(--ink-soft);
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(38, 53, 84, .06);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      top: 14px;
+      z-index: 100;
+      translate: -50% 0;
+      max-width: calc(100% - 28px);
+      border: 1px solid rgba(59, 130, 246, .16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .92);
+      color: var(--ink);
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: 950;
+      box-shadow: 0 14px 34px rgba(38, 53, 84, .16);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+      transform: translateY(-6px);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (min-width: 700px) {
+      .counter-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      h1 {
+        max-width: 520px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app"></div>
+  <div id="toast" class="toast"></div>
+  <input id="fileInput" class="hidden" type="file" accept="application/json" />
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "pocket-count-standalone-v4";
+    const BACKUP_KEY = `${STORAGE_KEY}:backup`;
+    const SECOND_BACKUP_KEY = `${STORAGE_KEY}:backup2`;
+    const DRAFT_KEY = `${STORAGE_KEY}:draft`;
+    const SAVE_SCHEMA_VERSION = 4;
+
+    let lastSavedText = "";
+    let draftSaveTimer = null;
+    let recoveredFromBackup = "";
+
+    const PRESETS = [
+      {
+        key: "smash",
+        name: "スマブラ",
+        memo: "例：相手キャラ、復帰阻止、撃墜択、次回の改善メモなど",
+        counters: [
+          { label: "勝ち", includeInTotal: true },
+          { label: "負け", includeInTotal: true },
+          { label: "復帰阻止成功", includeInTotal: false },
+          { label: "撃墜ミス", includeInTotal: false },
+          { label: "メタブレ始動", includeInTotal: false },
+        ],
+      },
+      {
+        key: "sf6",
+        name: "スト6",
+        memo: "例：相手キャラ、距離感、ミスした入力、通った択など",
+        counters: [
+          { label: "勝ち", includeInTotal: true },
+          { label: "負け", includeInTotal: true },
+          { label: "投げ成功", includeInTotal: false },
+          { label: "対空成功", includeInTotal: false },
+          { label: "SAミス", includeInTotal: false },
+        ],
+      },
+      {
+        key: "work",
+        name: "仕事メモ",
+        memo: "例：対応数、確認待ち、完了、差し戻しなど",
+        counters: [
+          { label: "完了", includeInTotal: true },
+          { label: "確認中", includeInTotal: true },
+          { label: "差し戻し", includeInTotal: true },
+          { label: "メモ", includeInTotal: false },
+        ],
+      },
+    ];
+
+    const state = {
+      data: loadData(),
+      lastAction: null,
+      editingCounterId: null,
+      draftLabel: "",
+      toastTimer: null,
+      inputDraft: loadInputDraft(),
+      restoredInputDraft: false,
+      targetSettingsOpen: false,
+    };
+
+    const app = document.getElementById("app");
+    const toast = document.getElementById("toast");
+    const fileInput = document.getElementById("fileInput");
+
+    function uid() {
+      return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+    }
+
+    function makeCounter(label = "カウント", value = 0, memo = "", includeInTotal = true) {
+      return { id: uid(), label, value, memo, includeInTotal };
+    }
+
+    function makeBoard(name = "新しいボード", counters = [makeCounter()]) {
+      return { id: uid(), name, memo: "", counters };
+    }
+
+    function createInitialData() {
+      const board = makeBoard("今日のカウント", [makeCounter("カウント", 0, "", true)]);
+      return { boards: [board], activeBoardId: board.id };
+    }
+
+    function safeParse(text) {
+      try {
+        return JSON.parse(text);
+      } catch {
+        return null;
+      }
+    }
+
+    function clampCount(value) {
+      const number = Number(value);
+      return Math.max(0, Number.isFinite(number) ? number : 0);
+    }
+
+    function calcAllTotal(counters = []) {
+      return counters.reduce((sum, counter) => sum + clampCount(counter.value), 0);
+    }
+
+    function calcTargetTotal(counters = []) {
+      return counters.reduce((sum, counter) => {
+        if (counter.includeInTotal === false) return sum;
+        return sum + clampCount(counter.value);
+      }, 0);
+    }
+
+    function countTargetCounters(counters = []) {
+      return counters.filter((counter) => counter.includeInTotal !== false).length;
+    }
+
+    function getTopCounter(counters = []) {
+      if (!counters.length) return null;
+      return counters.reduce((top, counter) => {
+        if (!top) return counter;
+        return clampCount(counter.value) > clampCount(top.value) ? counter : top;
+      }, null);
+    }
+
+    function changeCounterValue(counters, counterId, diff) {
+      let actualDiff = 0;
+      const nextCounters = counters.map((counter) => {
+        if (counter.id !== counterId) return counter;
+        const before = clampCount(counter.value);
+        const after = clampCount(before + diff);
+        actualDiff = after - before;
+        return { ...counter, value: after };
+      });
+      return { counters: nextCounters, actualDiff };
+    }
+
+    function normalizeImportedData(value) {
+      const imported = value && value.data ? value.data : value;
+      if (!imported || !Array.isArray(imported.boards) || imported.boards.length === 0) return null;
+
+      const boards = imported.boards.map((board) => {
+        const counters = Array.isArray(board.counters)
+          ? board.counters.map((counter) => ({
+              id: counter.id || uid(),
+              label: String(counter.label || "カウント"),
+              value: clampCount(counter.value || 0),
+              memo: String(counter.memo || ""),
+              includeInTotal: counter.includeInTotal !== false,
+            }))
+          : [];
+
+        return {
+          id: board.id || uid(),
+          name: String(board.name || "無題"),
+          memo: String(board.memo || ""),
+          counters: counters.length ? counters : [makeCounter()],
+        };
+      });
+
+      const activeBoardId = boards.some((board) => board.id === imported.activeBoardId)
+        ? imported.activeBoardId
+        : boards[0].id;
+
+      return { boards, activeBoardId };
+    }
+
+    function unwrapStoredPayload(value) {
+      if (!value) return null;
+      return value.data || value;
+    }
+
+    function readStoredData(key) {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const parsed = safeParse(raw);
+      return normalizeImportedData(unwrapStoredPayload(parsed));
+    }
+
+    function loadData() {
+      const candidates = [STORAGE_KEY, BACKUP_KEY, SECOND_BACKUP_KEY, DRAFT_KEY];
+
+      for (const key of candidates) {
+        const normalized = readStoredData(key);
+        if (normalized) {
+          if (key !== STORAGE_KEY) recoveredFromBackup = key;
+          return normalized;
+        }
+      }
+
+      return createInitialData();
+    }
+
+    function serializeSavePayload() {
+      return JSON.stringify({
+        app: "Pocket Count",
+        schemaVersion: SAVE_SCHEMA_VERSION,
+        savedAt: new Date().toISOString(),
+        data: state.data,
+      });
+    }
+
+    function saveData() {
+      try {
+        const nextText = serializeSavePayload();
+        if (nextText === lastSavedText) return true;
+
+        const current = localStorage.getItem(STORAGE_KEY);
+        const backup = localStorage.getItem(BACKUP_KEY);
+
+        if (backup) localStorage.setItem(SECOND_BACKUP_KEY, backup);
+        if (current) localStorage.setItem(BACKUP_KEY, current);
+
+        localStorage.setItem(STORAGE_KEY, nextText);
+        lastSavedText = nextText;
+        return true;
+      } catch {
+        showToast("保存容量がいっぱいかもしれません");
+        return false;
+      }
+    }
+
+    function loadInputDraft() {
+      const parsed = safeParse(localStorage.getItem(DRAFT_KEY));
+      if (!parsed || !parsed.inputDraft || !parsed.savedAt) return null;
+
+      const ageMs = Date.now() - new Date(parsed.savedAt).getTime();
+      if (!Number.isFinite(ageMs) || ageMs > 1000 * 60 * 60 * 24) return null;
+
+      return parsed.inputDraft;
+    }
+
+    function activeBoard() {
+      return state.data.boards.find((board) => board.id === state.data.activeBoardId) || state.data.boards[0];
+    }
+
+    function getInputDraft() {
+      return {
+        activeBoardId: state.data.activeBoardId,
+        newBoardName: document.querySelector("[data-input='new-board']")?.value || "",
+        newCounterName: document.querySelector("[data-input='new-counter']")?.value || "",
+        editCounterId: state.editingCounterId,
+        editCounterLabel: document.querySelector("[data-input='edit-counter']")?.value || state.draftLabel || "",
+        memo: document.querySelector("[data-input='memo']")?.value || activeBoard()?.memo || "",
+      };
+    }
+
+    function saveDraftNow() {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          app: "Pocket Count Draft",
+          savedAt: new Date().toISOString(),
+          data: state.data,
+          inputDraft: getInputDraft(),
+        }));
+      } catch {
+        // 下書き保存は補助機能なので、容量不足時も操作を止めない
+      }
+    }
+
+    function queueDraftSave() {
+      clearTimeout(draftSaveTimer);
+      draftSaveTimer = setTimeout(saveDraftNow, 120);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      clearTimeout(state.toastTimer);
+      toast.textContent = message;
+      toast.classList.add("show");
+      state.toastTimer = setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    function vibrate(ms = 8) {
+      if (navigator.vibrate) navigator.vibrate(ms);
+    }
+
+    function restoreInputDraftOnce() {
+      if (state.restoredInputDraft || !state.inputDraft) return;
+      const draft = state.inputDraft;
+
+      const newBoardInput = document.querySelector("[data-input='new-board']");
+      const newCounterInput = document.querySelector("[data-input='new-counter']");
+      const memoInput = document.querySelector("[data-input='memo']");
+
+      if (newBoardInput && draft.newBoardName) newBoardInput.value = draft.newBoardName;
+      if (newCounterInput && draft.newCounterName) newCounterInput.value = draft.newCounterName;
+      if (memoInput && draft.memo && draft.activeBoardId === state.data.activeBoardId) memoInput.value = draft.memo;
+
+      if (draft.editCounterId && draft.editCounterLabel) {
+        const board = activeBoard();
+        const counter = board.counters.find((item) => item.id === draft.editCounterId);
+        if (counter) {
+          state.editingCounterId = draft.editCounterId;
+          state.draftLabel = draft.editCounterLabel;
+          state.inputDraft = null;
+          state.restoredInputDraft = true;
+          render();
+          showToast("編集中の内容を復元しました");
+          return;
+        }
+      }
+
+      state.restoredInputDraft = true;
+      if (draft.newBoardName || draft.newCounterName) showToast("入力途中の内容を復元しました");
+    }
+
+    function setActiveBoard(boardId) {
+      state.data.activeBoardId = boardId;
+      state.editingCounterId = null;
+      state.draftLabel = "";
+      state.targetSettingsOpen = false;
+      saveData();
+      render();
+    }
+
+    function toggleTargetPanel() {
+      state.targetSettingsOpen = !state.targetSettingsOpen;
+      render();
+    }
+
+    function updateBoard(boardId, updater) {
+      state.data.boards = state.data.boards.map((board) => board.id === boardId ? updater(board) : board);
+      saveData();
+      render();
+    }
+
+    function changeCounter(counterId, diff) {
+      const board = activeBoard();
+      const result = changeCounterValue(board.counters, counterId, diff);
+      if (result.actualDiff === 0) return;
+
+      vibrate(diff > 0 ? 7 : 12);
+      state.lastAction = { boardId: board.id, counterId, diff: result.actualDiff };
+      updateBoard(board.id, (current) => ({
+        ...current,
+        counters: changeCounterValue(current.counters, counterId, diff).counters,
+      }));
+    }
+
+    function undo() {
+      if (!state.lastAction) return;
+      const action = state.lastAction;
+      state.lastAction = null;
+      vibrate(20);
+      updateBoard(action.boardId, (board) => ({
+        ...board,
+        counters: changeCounterValue(board.counters, action.counterId, -action.diff).counters,
+      }));
+      showToast("直前の操作を戻しました");
+    }
+
+    function addBoardFromValues(name, counters, memo = "") {
+      const board = makeBoard(name, counters.map((counter) => makeCounter(counter.label, 0, "", counter.includeInTotal !== false)));
+      board.memo = memo;
+      state.data.boards.push(board);
+      state.data.activeBoardId = board.id;
+      state.lastAction = null;
+      saveData();
+      render();
+      showToast("ボードを追加しました");
+    }
+
+    function addBoard() {
+      const input = document.querySelector("[data-input='new-board']");
+      const name = (input?.value || "").trim();
+      if (!name) return;
+      addBoardFromValues(name, [{ label: "カウント", includeInTotal: true }]);
+    }
+
+    function addPresetBoard(presetKey) {
+      const preset = PRESETS.find((item) => item.key === presetKey);
+      if (!preset) return;
+      addBoardFromValues(preset.name, preset.counters, preset.memo);
+    }
+
+    function addCounter() {
+      const input = document.querySelector("[data-input='new-counter']");
+      const label = (input?.value || "").trim();
+      if (!label) return;
+
+      const board = activeBoard();
+      updateBoard(board.id, (current) => ({
+        ...current,
+        counters: [...current.counters, makeCounter(label, 0, "", true)],
+      }));
+      showToast("項目を追加しました");
+    }
+
+    function deleteCounter(counterId) {
+      const board = activeBoard();
+      updateBoard(board.id, (current) => {
+        const nextCounters = current.counters.filter((counter) => counter.id !== counterId);
+        return { ...current, counters: nextCounters.length ? nextCounters : [makeCounter("カウント")] };
+      });
+      showToast("項目を削除しました");
+    }
+
+    function toggleIncludeInTotal(counterId) {
+      const board = activeBoard();
+      updateBoard(board.id, (current) => ({
+        ...current,
+        counters: current.counters.map((counter) => (
+          counter.id === counterId ? { ...counter, includeInTotal: counter.includeInTotal === false } : counter
+        )),
+      }));
+    }
+
+    function applyTotalPreset(type) {
+      const board = activeBoard();
+      updateBoard(board.id, (current) => ({
+        ...current,
+        counters: current.counters.map((counter) => {
+          if (type === "all") return { ...counter, includeInTotal: true };
+          if (type === "none") return { ...counter, includeInTotal: false };
+          return counter;
+        }),
+      }));
+
+      if (type === "all") showToast("すべて合計対象にしました");
+      if (type === "none") showToast("合計対象を外しました");
+    }
+
+    function startEdit(counterId, label) {
+      state.editingCounterId = counterId;
+      state.draftLabel = label;
+      render();
+      requestAnimationFrame(() => {
+        const input = document.querySelector("[data-input='edit-counter']");
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    }
+
+    function finishEdit() {
+      const board = activeBoard();
+      const input = document.querySelector("[data-input='edit-counter']");
+      const label = (input?.value || state.draftLabel || "").trim();
+      const targetId = state.editingCounterId;
+
+      state.editingCounterId = null;
+      state.draftLabel = "";
+
+      if (!targetId || !label) {
+        render();
+        return;
+      }
+
+      updateBoard(board.id, (current) => ({
+        ...current,
+        counters: current.counters.map((counter) => counter.id === targetId ? { ...counter, label } : counter),
+      }));
+    }
+
+    function updateMemo(value) {
+      const board = activeBoard();
+      board.memo = value;
+      saveData();
+      queueDraftSave();
+    }
+
+    function resetBoard() {
+      const board = activeBoard();
+      const ok = window.confirm(`${board.name} のカウントをすべて0に戻しますか？`);
+      if (!ok) return;
+
+      state.lastAction = null;
+      updateBoard(board.id, (current) => ({
+        ...current,
+        counters: current.counters.map((counter) => ({ ...counter, value: 0 })),
+      }));
+      showToast("カウントをリセットしました");
+    }
+
+    function buildPlainTextExport() {
+      const board = activeBoard();
+      const targetTotal = calcTargetTotal(board.counters);
+      const allTotal = calcAllTotal(board.counters);
+      const top = getTopCounter(board.counters);
+      const lines = [];
+
+      lines.push(`【${board.name}】`);
+      lines.push(`対象合計 ${targetTotal}`);
+      lines.push(`全体 ${allTotal}`);
+      if (top) lines.push(`最多 ${top.label} ${clampCount(top.value)}`);
+      lines.push("");
+      lines.push("■カウント");
+      board.counters.forEach((counter) => {
+        const mark = counter.includeInTotal === false ? "対象外" : "対象";
+        lines.push(`・${counter.label} ${clampCount(counter.value)}（${mark}）`);
+      });
+
+      if ((board.memo || "").trim()) {
+        lines.push("");
+        lines.push("■メモ");
+        lines.push(board.memo.trim());
+      }
+
+      return lines.join("\n");
+    }
+
+    async function copyTextExport() {
+      const text = buildPlainTextExport();
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("テキストをコピーしました");
+      } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const ok = document.execCommand("copy");
+        textarea.remove();
+        showToast(ok ? "テキストをコピーしました" : "コピーできませんでした");
+      }
+    }
+
+    async function importJson(file) {
+      if (!file) return;
+      const text = await file.text();
+      const normalized = normalizeImportedData(safeParse(text));
+      fileInput.value = "";
+      if (!normalized) {
+        showToast("読み込みに失敗しました");
+        return;
+      }
+      state.data = normalized;
+      state.lastAction = null;
+      state.editingCounterId = null;
+      saveData();
+      render();
+      showToast("JSONを読み込みました");
+    }
+
+    function counterHtml(counter, targetTotal, allTotal) {
+      const value = clampCount(counter.value);
+      const included = counter.includeInTotal !== false;
+      const baseTotal = included ? targetTotal : allTotal;
+      const ratio = baseTotal > 0 ? Math.round((value / baseTotal) * 100) : 0;
+      const isEditing = state.editingCounterId === counter.id;
+      const labelHtml = isEditing
+        ? `<input class="edit-input" data-input="edit-counter" value="${escapeHtml(state.draftLabel || counter.label)}" />`
+        : `<div class="counter-label">${escapeHtml(counter.label)}</div>`;
+      const editButton = isEditing
+        ? `<button class="side-btn ok" data-action="finish-edit" aria-label="編集を保存">✓</button>`
+        : `<button class="side-btn" data-action="start-edit" data-counter-id="${counter.id}" data-label="${escapeHtml(counter.label)}" aria-label="項目名を編集">✎</button>`;
+
+      return `
+        <article class="counter-card">
+          <div class="counter-grid">
+            <button class="count-main" data-action="plus" data-counter-id="${counter.id}" aria-label="${escapeHtml(counter.label)}を増やす">
+              <div class="counter-head">
+                <div style="min-width:0; display:flex; align-items:center; gap:8px;">
+                  ${labelHtml}
+                  <span class="count-badge ${included ? "on" : "off"}">${included ? "対象" : "対象外"}</span>
+                </div>
+                <div class="plus-badge">＋</div>
+              </div>
+              <div class="count-line">
+                <div class="count-value">${value}</div>
+                <div class="ratio">${included ? `${ratio}%` : "記録"}</div>
+              </div>
+              <div class="bar"><div class="bar-fill ${included ? "" : "off"}" style="width:${included ? ratio : 0}%"></div></div>
+            </button>
+            <div class="side-actions">
+              <button class="side-btn" data-action="minus" data-counter-id="${counter.id}" aria-label="${escapeHtml(counter.label)}を減らす">−</button>
+              ${editButton}
+              <button class="side-btn danger" data-action="delete-counter" data-counter-id="${counter.id}" aria-label="項目を削除">×</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function render() {
+      const board = activeBoard();
+      const targetTotal = calcTargetTotal(board.counters);
+      const allTotal = calcAllTotal(board.counters);
+      const targetCount = countTargetCounters(board.counters);
+      const topCounter = getTopCounter(board.counters);
+
+      app.innerHTML = `
+        <header class="top">
+          <div class="top-row">
+            <div class="brand">
+              <div class="eyebrow">✦ Pocket Count</div>
+              <h1>${escapeHtml(board.name)}</h1>
+            </div>
+            <div class="row">
+              <button class="icon-btn" data-action="undo" ${state.lastAction ? "" : "disabled"} aria-label="直前の操作を戻す">↶</button>
+              <button class="icon-btn primary" data-action="copy-text" aria-label="テキストをコピー">⧉</button>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="stat-label">対象合計</div><div class="stat-value">${targetTotal}</div></div>
+            <div class="stat"><div class="stat-label">全体</div><div class="stat-value">${allTotal}</div></div>
+            <div class="stat"><div class="stat-label">最多</div><div class="stat-value small">${topCounter ? `${escapeHtml(topCounter.label)} ${clampCount(topCounter.value)}` : "—"}</div></div>
+          </div>
+        </header>
+
+        <section class="boards-wrap" aria-label="ボード一覧">
+          <div class="boards">
+            ${state.data.boards.map((item) => `
+              <button class="board-tab ${item.id === board.id ? "is-active" : ""}" data-action="select-board" data-board-id="${item.id}">
+                <span>
+                  <span class="board-name">${escapeHtml(item.name)}</span>
+                  <span class="board-sub">対象 ${calcTargetTotal(item.counters)}</span>
+                </span>
+                <span aria-hidden="true">◉</span>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+
+        <section class="target-strip ${state.targetSettingsOpen ? "is-open" : ""}">
+          <button class="target-summary" data-action="toggle-target-panel" aria-expanded="${state.targetSettingsOpen ? "true" : "false"}">
+            <span class="target-summary-main">
+              <span class="target-summary-label">対象合計</span>
+              <span class="target-summary-value">${targetTotal}</span>
+              <span class="target-summary-sub">${targetCount}/${board.counters.length}項目を集計中</span>
+            </span>
+            <span class="target-edit-pill">${state.targetSettingsOpen ? "閉じる" : "対象を変更"}</span>
+          </button>
+          <div class="target-detail">
+            <div class="target-help">対象合計に入れる項目を選択。カウント中は閉じて、カード操作に集中できます。</div>
+            <div class="target-actions" aria-label="合計対象の一括操作">
+              <button class="target-btn dark" data-action="target-all">すべて対象</button>
+              <button class="target-btn gray" data-action="target-none">すべて外す</button>
+            </div>
+            <div class="target-picker" aria-label="合計対象を選択">
+              ${board.counters.map((counter) => {
+                const included = counter.includeInTotal !== false;
+                return `
+                  <button class="target-chip ${included ? "on" : ""}" data-action="toggle-include" data-counter-id="${counter.id}" aria-label="${escapeHtml(counter.label)}を合計対象にするか切り替え">
+                    <span class="chip-mark">${included ? "✓" : "−"}</span>
+                    <span class="chip-label">${escapeHtml(counter.label)}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="input-row">
+            <input class="text-input" data-input="new-board" placeholder="ボード名を入力" />
+            <button class="small-btn" data-action="add-board">追加</button>
+          </div>
+          <div class="preset-row" aria-label="プリセット">
+            ${PRESETS.map((preset) => `
+              <button class="preset-btn" data-action="add-preset" data-preset-key="${preset.key}">＋ ${escapeHtml(preset.name)}</button>
+            `).join("")}
+          </div>
+        </section>
+
+        <main class="counter-list">
+          ${board.counters.map((counter) => counterHtml(counter, targetTotal, allTotal)).join("")}
+        </main>
+
+        <section class="panel">
+          <div class="input-row">
+            <input class="text-input" data-input="new-counter" placeholder="項目名を入力" />
+            <button class="small-btn blue" data-action="add-counter">追加</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="memo-title">▣ メモ</div>
+          <textarea class="memo" data-input="memo" placeholder="気づき、今日のテーマ、次回やること。ここは思考のログ。">${escapeHtml(board.memo || "")}</textarea>
+        </section>
+
+        <section class="tools">
+          <button class="tool-btn" data-action="copy-text">⧉ テキストコピー</button>
+          <button class="tool-btn" data-action="reset">× リセット</button>
+        </section>
+      `;
+
+      requestAnimationFrame(restoreInputDraftOnce);
+    }
+
+    function runSelfTests() {
+      const counters = [
+        { id: "w", label: "勝ち", value: 3, includeInTotal: true },
+        { id: "l", label: "負け", value: 1, includeInTotal: true },
+        { id: "m", label: "ミス", value: 2, includeInTotal: false },
+      ];
+
+      console.assert(calcAllTotal(counters) === 6, "calcAllTotal should sum all values");
+      console.assert(calcTargetTotal(counters) === 4, "calcTargetTotal should sum included values");
+      console.assert(calcTargetTotal([{ id: "x", label: "自由項目", value: 5, includeInTotal: true }, { id: "y", label: "観察メモ", value: 9, includeInTotal: false }]) === 5, "target total should support arbitrary selected counters");
+      console.assert(countTargetCounters(counters) === 2, "countTargetCounters should count included counters");
+      console.assert(typeof state?.targetSettingsOpen !== "undefined", "target settings should support progressive disclosure state");
+      console.assert(getTopCounter(counters).label === "勝ち", "getTopCounter should return highest counter");
+
+      const minus = changeCounterValue([{ id: "a", label: "A", value: 0 }], "a", -1);
+      console.assert(minus.counters[0].value === 0, "counter should not go below zero");
+      console.assert(minus.actualDiff === 0, "actualDiff should be zero when clamped");
+
+      const plus = changeCounterValue([{ id: "a", label: "A", value: 1 }], "a", 2);
+      console.assert(plus.counters[0].value === 3, "counter should increase");
+      console.assert(plus.actualDiff === 2, "actualDiff should match diff");
+
+      const normalized = normalizeImportedData({ boards: [{ name: "Test", counters: [{ label: "A", value: -5 }] }] });
+      console.assert(normalized.boards[0].counters[0].value === 0, "imported negative values should be clamped");
+      console.assert(normalized.boards[0].counters[0].includeInTotal === true, "old imported counters should be included by default");
+
+      const fallback = normalizeImportedData({ boards: [{ name: "Empty", counters: [] }] });
+      console.assert(fallback.boards[0].counters.length === 1, "empty imported board should receive one counter");
+    }
+
+    app.addEventListener("click", (event) => {
+      const target = event.target.closest("button");
+      if (!target) return;
+
+      const action = target.dataset.action;
+      const counterId = target.dataset.counterId;
+
+      if (action === "select-board") setActiveBoard(target.dataset.boardId);
+      if (action === "undo") undo();
+      if (action === "copy-text") copyTextExport();
+      if (action === "add-board") addBoard();
+      if (action === "add-preset") addPresetBoard(target.dataset.presetKey);
+      if (action === "add-counter") addCounter();
+      if (action === "plus") changeCounter(counterId, 1);
+      if (action === "minus") changeCounter(counterId, -1);
+      if (action === "delete-counter") deleteCounter(counterId);
+      if (action === "start-edit") startEdit(counterId, target.dataset.label || "");
+      if (action === "finish-edit") finishEdit();
+      if (action === "toggle-target-panel") toggleTargetPanel();
+      if (action === "toggle-include") toggleIncludeInTotal(counterId);
+      if (action === "target-all") applyTotalPreset("all");
+      if (action === "target-none") applyTotalPreset("none");
+      if (action === "reset") resetBoard();
+      if (action === "import") fileInput.click();
+    });
+
+    app.addEventListener("keydown", (event) => {
+      const input = event.target;
+      if (!(input instanceof HTMLInputElement)) return;
+
+      if (event.key === "Enter" && input.dataset.input === "new-board") addBoard();
+      if (event.key === "Enter" && input.dataset.input === "new-counter") addCounter();
+      if (event.key === "Enter" && input.dataset.input === "edit-counter") finishEdit();
+      if (event.key === "Escape" && input.dataset.input === "edit-counter") {
+        state.editingCounterId = null;
+        state.draftLabel = "";
+        render();
+      }
+    });
+
+    app.addEventListener("input", (event) => {
+      const input = event.target;
+      if (input instanceof HTMLTextAreaElement && input.dataset.input === "memo") {
+        updateMemo(input.value);
+        return;
+      }
+
+      if (input instanceof HTMLInputElement) {
+        if (input.dataset.input === "edit-counter") state.draftLabel = input.value;
+        queueDraftSave();
+      }
+    });
+
+    fileInput.addEventListener("change", () => importJson(fileInput.files[0]));
+
+    window.addEventListener("pagehide", saveDraftNow);
+    window.addEventListener("beforeunload", saveDraftNow);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") saveDraftNow();
+    });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key !== STORAGE_KEY || !event.newValue) return;
+      const normalized = normalizeImportedData(unwrapStoredPayload(safeParse(event.newValue)));
+      if (!normalized) return;
+      state.data = normalized;
+      state.lastAction = null;
+      state.editingCounterId = null;
+      state.draftLabel = "";
+      render();
+      showToast("別タブの更新を反映しました");
+    });
+
+    runSelfTests();
+    render();
+
+    if (recoveredFromBackup) {
+      setTimeout(() => showToast("バックアップから復元しました"), 240);
+    }
+  </script>
+</body>
+</html>
