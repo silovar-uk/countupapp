@@ -981,7 +981,7 @@
     }
 
     function makeBoard(name = "新しいボード", counters = [makeCounter()]) {
-      return { id: uid(), name, memo: "", counters };
+      return { id: uid(), name, memo: "", counters, history: [] };
     }
 
     function createInitialData() {
@@ -1025,6 +1025,71 @@
       }, null);
     }
 
+    function getTargetStreak(board) {
+      if (!board || !Array.isArray(board.history)) return null;
+      const includedCounters = new Map(
+        board.counters
+          .filter((counter) => counter.includeInTotal !== false)
+          .map((counter) => [counter.id, counter])
+      );
+      if (includedCounters.size === 0) return null;
+
+      const targetHistory = board.history.filter((event) => includedCounters.has(event.counterId));
+      if (targetHistory.length === 0) return null;
+
+      const last = targetHistory[targetHistory.length - 1];
+      const lastCounter = includedCounters.get(last.counterId);
+      if (!lastCounter) return null;
+
+      let count = 0;
+      for (let i = targetHistory.length - 1; i >= 0; i -= 1) {
+        if (targetHistory[i].counterId !== last.counterId) break;
+        count += 1;
+      }
+
+      return { counterId: last.counterId, label: lastCounter.label, count };
+    }
+
+    function formatStreak(streak) {
+      if (!streak) return "—";
+      if (streak.label.includes("勝")) return `${streak.count}連勝`;
+      if (streak.label.includes("負")) return `${streak.count}連敗`;
+      return `${streak.label} ${streak.count}連続`;
+    }
+
+    function appendHistory(history, counterId, count) {
+      const next = Array.isArray(history) ? [...history] : [];
+      for (let i = 0; i < count; i += 1) {
+        next.push({ counterId, at: new Date().toISOString() });
+      }
+      return next.slice(-1000);
+    }
+
+    function removeLatestHistory(history, counterId, count) {
+      const next = Array.isArray(history) ? [...history] : [];
+      for (let n = 0; n < count; n += 1) {
+        const index = next.map((event) => event.counterId).lastIndexOf(counterId);
+        if (index === -1) break;
+        next.splice(index, 1);
+      }
+      return next;
+    }
+
+    function applyCounterChangeToBoard(board, counterId, diff) {
+      const result = changeCounterValue(board.counters, counterId, diff);
+      let history = Array.isArray(board.history) ? board.history : [];
+
+      if (result.actualDiff > 0) {
+        history = appendHistory(history, counterId, result.actualDiff);
+      }
+
+      if (result.actualDiff < 0) {
+        history = removeLatestHistory(history, counterId, Math.abs(result.actualDiff));
+      }
+
+      return { ...board, counters: result.counters, history };
+    }
+
     function changeCounterValue(counters, counterId, diff) {
       let actualDiff = 0;
       const nextCounters = counters.map((counter) => {
@@ -1057,6 +1122,12 @@
           name: String(board.name || "無題"),
           memo: String(board.memo || ""),
           counters: counters.length ? counters : [makeCounter()],
+          history: Array.isArray(board.history)
+            ? board.history.map((event) => ({
+                counterId: String(event.counterId || ""),
+                at: String(event.at || new Date().toISOString()),
+              })).filter((event) => event.counterId)
+            : [],
         };
       });
 
@@ -1278,10 +1349,7 @@
 
       vibrate(diff > 0 ? 7 : 12);
       state.lastAction = { boardId: board.id, counterId, diff: result.actualDiff };
-      updateBoard(board.id, (current) => ({
-        ...current,
-        counters: changeCounterValue(current.counters, counterId, diff).counters,
-      }));
+      updateBoard(board.id, (current) => applyCounterChangeToBoard(current, counterId, diff));
     }
 
     function undo() {
@@ -1289,10 +1357,7 @@
       const action = state.lastAction;
       state.lastAction = null;
       vibrate(20);
-      updateBoard(action.boardId, (board) => ({
-        ...board,
-        counters: changeCounterValue(board.counters, action.counterId, -action.diff).counters,
-      }));
+      updateBoard(action.boardId, (board) => applyCounterChangeToBoard(board, action.counterId, -action.diff));
       showToast("直前の操作を戻しました");
     }
 
@@ -1345,7 +1410,8 @@
 
       updateBoard(board.id, (current) => {
         const nextCounters = current.counters.filter((counter) => counter.id !== counterId);
-        return { ...current, counters: nextCounters.length ? nextCounters : [makeCounter("カウント")] };
+        const nextHistory = Array.isArray(current.history) ? current.history.filter((event) => event.counterId !== counterId) : [];
+        return { ...current, counters: nextCounters.length ? nextCounters : [makeCounter("カウント")], history: nextHistory };
       });
       showToast("項目を削除しました");
     }
@@ -1460,11 +1526,13 @@
       const targetTotal = calcTargetTotal(board.counters);
       const allTotal = calcAllTotal(board.counters);
       const top = getTopCounter(board.counters);
+      const streak = getTargetStreak(board);
       const lines = [];
 
       lines.push(`【${board.name}】`);
       lines.push(`対象合計 ${targetTotal}`);
       lines.push(`全体 ${allTotal}`);
+      lines.push(`連続 ${formatStreak(streak)}`);
       if (top) lines.push(`最多 ${top.label} ${clampCount(top.value)}`);
       lines.push("");
       lines.push("■カウント");
@@ -1563,6 +1631,7 @@
       const allTotal = calcAllTotal(board.counters);
       const targetCount = countTargetCounters(board.counters);
       const topCounter = getTopCounter(board.counters);
+      const streak = getTargetStreak(board);
 
       app.innerHTML = `
         <header class="top">
@@ -1586,7 +1655,7 @@
           <div class="stats">
             <div class="stat"><div class="stat-label">対象合計</div><div class="stat-value">${targetTotal}</div></div>
             <div class="stat"><div class="stat-label">全体</div><div class="stat-value">${allTotal}</div></div>
-            <div class="stat"><div class="stat-label">最多</div><div class="stat-value small">${topCounter ? `${escapeHtml(topCounter.label)} ${clampCount(topCounter.value)}` : "—"}</div></div>
+            <div class="stat"><div class="stat-label">連続</div><div class="stat-value small">${escapeHtml(formatStreak(streak))}</div></div>
           </div>
         </header>
 
@@ -1691,6 +1760,9 @@
       console.assert(createInitialData().boards.length === 1, "deleting the final board can fall back to a fresh default board");
       console.assert(typeof state?.targetSettingsOpen !== "undefined", "target settings should support progressive disclosure state");
       console.assert(getTopCounter(counters).label === "勝ち", "getTopCounter should return highest counter");
+      const streakBoard = { counters, history: [{ counterId: "m" }, { counterId: "w" }, { counterId: "w" }, { counterId: "m" }, { counterId: "w" }, { counterId: "w" }] };
+      console.assert(getTargetStreak(streakBoard).count === 4, "target streak should ignore excluded counters between included events");
+      console.assert(formatStreak({ label: "勝ち", count: 3 }) === "3連勝", "win streak should be formatted as 連勝");
 
       const minus = changeCounterValue([{ id: "a", label: "A", value: 0 }], "a", -1);
       console.assert(minus.counters[0].value === 0, "counter should not go below zero");
@@ -1703,6 +1775,7 @@
       const normalized = normalizeImportedData({ boards: [{ name: "Test", counters: [{ label: "A", value: -5 }] }] });
       console.assert(normalized.boards[0].counters[0].value === 0, "imported negative values should be clamped");
       console.assert(normalized.boards[0].counters[0].includeInTotal === true, "old imported counters should be included by default");
+      console.assert(Array.isArray(normalized.boards[0].history), "imported boards should have history arrays");
 
       const fallback = normalizeImportedData({ boards: [{ name: "Empty", counters: [] }] });
       console.assert(fallback.boards[0].counters.length === 1, "empty imported board should receive one counter");
