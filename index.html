@@ -111,6 +111,7 @@
 
     .brand {
       min-width: 0;
+      flex: 1 1 auto;
     }
 
     .eyebrow {
@@ -132,9 +133,60 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       color: var(--ink);
-      font-size: clamp(24px, 7vw, 34px);
+      font-size: clamp(22px, 6.2vw, 32px);
       line-height: 1.05;
       letter-spacing: -.045em;
+    }
+
+    .board-title-button {
+      max-width: 58vw;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .board-title-text {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: clamp(22px, 6.2vw, 32px);
+      font-weight: 1000;
+      line-height: 1.05;
+      letter-spacing: -.045em;
+    }
+
+    .title-edit-mark {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, .10);
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .board-title-input {
+      width: min(58vw, 420px);
+      height: 40px;
+      border: 1px solid rgba(59, 130, 246, .30);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--ink);
+      padding: 0 12px;
+      font-size: 20px;
+      font-weight: 950;
+      letter-spacing: -.04em;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, .10);
     }
 
     .icon-btn {
@@ -553,34 +605,35 @@
 
     .counter-list {
       display: grid;
-      gap: 10px;
-      margin-top: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .counter-card {
       border: 1px solid var(--line);
-      border-radius: 28px;
+      border-radius: 22px;
       background: var(--surface);
-      padding: 10px;
-      box-shadow: var(--shadow);
+      padding: 7px;
+      box-shadow: 0 12px 32px rgba(38, 53, 84, .10);
       backdrop-filter: var(--blur);
       -webkit-backdrop-filter: var(--blur);
     }
 
     .counter-grid {
       display: grid;
-      grid-template-columns: 1fr 50px;
-      gap: 9px;
+      grid-template-columns: 1fr 38px;
+      gap: 6px;
       align-items: stretch;
     }
 
     .count-main {
-      min-height: 112px;
+      min-height: 94px;
       border: 1px solid rgba(23, 32, 51, .08);
-      border-radius: 23px;
+      border-radius: 18px;
       background: var(--surface-solid);
       color: var(--ink);
-      padding: 14px;
+      padding: 10px;
       text-align: left;
       overflow: hidden;
       box-shadow: 0 8px 22px rgba(38, 53, 84, .07);
@@ -590,7 +643,7 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 10px;
+      gap: 6px;
     }
 
     .counter-label {
@@ -599,34 +652,34 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       color: var(--ink);
-      font-size: 18px;
+      font-size: 14px;
       font-weight: 950;
       letter-spacing: -.03em;
     }
 
     .plus-badge {
-      width: 42px;
-      height: 42px;
+      width: 30px;
+      height: 30px;
       display: grid;
       place-items: center;
       flex: 0 0 auto;
-      border-radius: 16px;
+      border-radius: 12px;
       background: var(--accent-soft);
       color: var(--accent-2);
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 950;
     }
 
     .count-line {
       display: flex;
       align-items: flex-end;
-      gap: 8px;
+      gap: 6px;
       margin-top: 8px;
     }
 
     .count-value {
       color: var(--ink);
-      font-size: clamp(54px, 16vw, 72px);
+      font-size: clamp(38px, 10.5vw, 56px);
       font-weight: 1000;
       line-height: .88;
       letter-spacing: -.095em;
@@ -634,18 +687,18 @@
     }
 
     .ratio {
-      padding-bottom: 4px;
+      padding-bottom: 3px;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 850;
     }
 
     .bar {
-      height: 8px;
+      height: 6px;
       overflow: hidden;
       border-radius: 999px;
       background: #e4eaf3;
-      margin-top: 14px;
+      margin-top: 10px;
     }
 
     .bar-fill {
@@ -662,16 +715,16 @@
 
     .side-actions {
       display: grid;
-      gap: 7px;
+      gap: 5px;
     }
 
     .side-btn {
-      min-height: 45px;
+      min-height: 32px;
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 13px;
       background: var(--surface-soft);
       color: var(--ink-soft);
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 950;
       box-shadow: 0 8px 18px rgba(38, 53, 84, .05);
     }
@@ -691,11 +744,11 @@
     .count-badge {
       display: inline-flex;
       align-items: center;
-      height: 24px;
+      height: 20px;
       flex: 0 0 auto;
       border-radius: 999px;
-      padding: 0 8px;
-      font-size: 12px;
+      padding: 0 6px;
+      font-size: 10px;
       font-weight: 950;
     }
 
@@ -711,13 +764,13 @@
 
     .edit-input {
       width: 100%;
-      height: 42px;
+      height: 34px;
       border: 1px solid rgba(59, 130, 246, .26);
-      border-radius: 13px;
+      border-radius: 11px;
       background: #f8fafc;
       color: var(--ink);
-      padding: 0 10px;
-      font-size: 18px;
+      padding: 0 8px;
+      font-size: 14px;
       font-weight: 950;
       outline: none;
     }
@@ -793,8 +846,35 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      h1 {
+      h1,
+      .board-title-button {
         max-width: 520px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .app {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .top {
+        margin-left: -10px;
+        margin-right: -10px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .counter-list {
+        gap: 7px;
+      }
+
+      .counter-card {
+        padding: 6px;
+      }
+
+      .count-main {
+        padding: 9px;
       }
     }
 
@@ -828,25 +908,19 @@
       {
         key: "smash",
         name: "スマブラ",
-        memo: "例：相手キャラ、復帰阻止、撃墜択、次回の改善メモなど",
+        memo: "",
         counters: [
           { label: "勝ち", includeInTotal: true },
           { label: "負け", includeInTotal: true },
-          { label: "復帰阻止成功", includeInTotal: false },
-          { label: "撃墜ミス", includeInTotal: false },
-          { label: "メタブレ始動", includeInTotal: false },
         ],
       },
       {
         key: "sf6",
         name: "スト6",
-        memo: "例：相手キャラ、距離感、ミスした入力、通った択など",
+        memo: "",
         counters: [
           { label: "勝ち", includeInTotal: true },
           { label: "負け", includeInTotal: true },
-          { label: "投げ成功", includeInTotal: false },
-          { label: "対空成功", includeInTotal: false },
-          { label: "SAミス", includeInTotal: false },
         ],
       },
       {
@@ -871,6 +945,8 @@
       inputDraft: loadInputDraft(),
       restoredInputDraft: false,
       targetSettingsOpen: false,
+      editingBoardName: false,
+      draftBoardName: "",
     };
 
     const app = document.getElementById("app");
@@ -1124,6 +1200,8 @@
       state.data.activeBoardId = boardId;
       state.editingCounterId = null;
       state.draftLabel = "";
+      state.editingBoardName = false;
+      state.draftBoardName = "";
       state.targetSettingsOpen = false;
       saveData();
       render();
@@ -1131,6 +1209,40 @@
 
     function toggleTargetPanel() {
       state.targetSettingsOpen = !state.targetSettingsOpen;
+      render();
+    }
+
+    function startBoardNameEdit() {
+      const board = activeBoard();
+      state.editingBoardName = true;
+      state.draftBoardName = board.name;
+      render();
+      requestAnimationFrame(() => {
+        const input = document.querySelector("[data-input='board-name']");
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    }
+
+    function finishBoardNameEdit() {
+      const board = activeBoard();
+      const input = document.querySelector("[data-input='board-name']");
+      const name = (input?.value || state.draftBoardName || "").trim();
+      state.editingBoardName = false;
+      state.draftBoardName = "";
+      if (!name) {
+        render();
+        return;
+      }
+      updateBoard(board.id, (current) => ({ ...current, name }));
+      showToast("ボード名を変更しました");
+    }
+
+    function cancelBoardNameEdit() {
+      state.editingBoardName = false;
+      state.draftBoardName = "";
       render();
     }
 
@@ -1404,7 +1516,14 @@
           <div class="top-row">
             <div class="brand">
               <div class="eyebrow">✦ Pocket Count</div>
-              <h1>${escapeHtml(board.name)}</h1>
+              ${state.editingBoardName ? `
+                <input class="board-title-input" data-input="board-name" value="${escapeHtml(state.draftBoardName || board.name)}" aria-label="ボード名を編集" />
+              ` : `
+                <button class="board-title-button" data-action="start-board-edit" aria-label="ボード名を編集">
+                  <span class="board-title-text">${escapeHtml(board.name)}</span>
+                  <span class="title-edit-mark">✎</span>
+                </button>
+              `}
             </div>
             <div class="row">
               <button class="icon-btn" data-action="undo" ${state.lastAction ? "" : "disabled"} aria-label="直前の操作を戻す">↶</button>
@@ -1486,7 +1605,7 @@
 
         <section class="panel">
           <div class="memo-title">▣ メモ</div>
-          <textarea class="memo" data-input="memo" placeholder="気づき、今日のテーマ、次回やること。ここは思考のログ。">${escapeHtml(board.memo || "")}</textarea>
+          <textarea class="memo" data-input="memo" placeholder="気づき、今日のテーマ、次回やること。未入力ならこの薄い文字だけが見えます。">${escapeHtml(board.memo || "")}</textarea>
         </section>
 
         <section class="tools">
@@ -1509,6 +1628,8 @@
       console.assert(calcTargetTotal(counters) === 4, "calcTargetTotal should sum included values");
       console.assert(calcTargetTotal([{ id: "x", label: "自由項目", value: 5, includeInTotal: true }, { id: "y", label: "観察メモ", value: 9, includeInTotal: false }]) === 5, "target total should support arbitrary selected counters");
       console.assert(countTargetCounters(counters) === 2, "countTargetCounters should count included counters");
+      console.assert(PRESETS.find((preset) => preset.key === "smash").counters.length === 2, "smash preset should start with win/loss only");
+      console.assert(PRESETS.find((preset) => preset.key === "sf6").memo === "", "preset memo should be placeholder-only by default");
       console.assert(typeof state?.targetSettingsOpen !== "undefined", "target settings should support progressive disclosure state");
       console.assert(getTopCounter(counters).label === "勝ち", "getTopCounter should return highest counter");
 
@@ -1536,6 +1657,7 @@
       const counterId = target.dataset.counterId;
 
       if (action === "select-board") setActiveBoard(target.dataset.boardId);
+      if (action === "start-board-edit") startBoardNameEdit();
       if (action === "undo") undo();
       if (action === "copy-text") copyTextExport();
       if (action === "add-board") addBoard();
@@ -1558,6 +1680,8 @@
       const input = event.target;
       if (!(input instanceof HTMLInputElement)) return;
 
+      if (event.key === "Enter" && input.dataset.input === "board-name") finishBoardNameEdit();
+      if (event.key === "Escape" && input.dataset.input === "board-name") cancelBoardNameEdit();
       if (event.key === "Enter" && input.dataset.input === "new-board") addBoard();
       if (event.key === "Enter" && input.dataset.input === "new-counter") addCounter();
       if (event.key === "Enter" && input.dataset.input === "edit-counter") finishEdit();
@@ -1576,6 +1700,7 @@
       }
 
       if (input instanceof HTMLInputElement) {
+        if (input.dataset.input === "board-name") state.draftBoardName = input.value;
         if (input.dataset.input === "edit-counter") state.draftLabel = input.value;
         queueDraftSave();
       }
