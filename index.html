@@ -822,6 +822,12 @@
       box-shadow: 0 8px 18px rgba(38, 53, 84, .06);
     }
 
+    .tool-btn.danger {
+      border-color: rgba(232, 117, 117, .18);
+      background: var(--danger-soft);
+      color: #c94f4f;
+    }
+
     .toast {
       position: fixed;
       left: 50%;
@@ -1422,6 +1428,33 @@
       showToast("カウントをリセットしました");
     }
 
+    function deleteActiveBoard() {
+      const board = activeBoard();
+      const ok = window.confirm(`「${board.name}」を削除しますか？
+
+このボード内の項目・カウント・メモも削除されます。`);
+      if (!ok) return;
+
+      const remainingBoards = state.data.boards.filter((item) => item.id !== board.id);
+
+      if (remainingBoards.length === 0) {
+        state.data = createInitialData();
+      } else {
+        state.data.boards = remainingBoards;
+        state.data.activeBoardId = remainingBoards[0].id;
+      }
+
+      state.lastAction = null;
+      state.editingCounterId = null;
+      state.draftLabel = "";
+      state.editingBoardName = false;
+      state.draftBoardName = "";
+      state.targetSettingsOpen = false;
+      saveData();
+      render();
+      showToast("ボードを削除しました");
+    }
+
     function buildPlainTextExport() {
       const board = activeBoard();
       const targetTotal = calcTargetTotal(board.counters);
@@ -1630,7 +1663,9 @@
 
         <section class="tools">
           <button class="tool-btn" data-action="copy-text">⧉ テキストコピー</button>
+          <button class="tool-btn" data-action="start-board-edit">✎ 名称変更</button>
           <button class="tool-btn" data-action="reset">× リセット</button>
+          <button class="tool-btn danger" data-action="delete-board">ボード削除</button>
         </section>
       `;
 
@@ -1653,6 +1688,7 @@
       console.assert(true, "included counters show percentage while excluded counters omit percentage instead of showing a large badge");
       console.assert(PRESETS.find((preset) => preset.key === "sf6").memo === "", "preset memo should be placeholder-only by default");
       console.assert(typeof window.confirm === "function", "delete confirmation should be available through window.confirm");
+      console.assert(createInitialData().boards.length === 1, "deleting the final board can fall back to a fresh default board");
       console.assert(typeof state?.targetSettingsOpen !== "undefined", "target settings should support progressive disclosure state");
       console.assert(getTopCounter(counters).label === "勝ち", "getTopCounter should return highest counter");
 
@@ -1696,6 +1732,7 @@
       if (action === "target-all") applyTotalPreset("all");
       if (action === "target-none") applyTotalPreset("none");
       if (action === "reset") resetBoard();
+      if (action === "delete-board") deleteActiveBoard();
       if (action === "import") fileInput.click();
     });
 
