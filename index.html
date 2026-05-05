@@ -805,6 +805,23 @@
       line-height: 1.65;
     }
 
+    .memo-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .memo-clear-btn {
+      height: 36px;
+      border: 1px solid rgba(232, 117, 117, .18);
+      border-radius: 999px;
+      background: var(--danger-soft);
+      color: #c94f4f;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
     .tools {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -1494,6 +1511,22 @@
       showToast("カウントをリセットしました");
     }
 
+    function clearMemoText() {
+      const board = activeBoard();
+      if (!board.memo || !board.memo.trim()) {
+        showToast("メモは空です");
+        return;
+      }
+
+      const ok = window.confirm(`「${board.name}」のメモを削除しますか？
+
+カウント数は残ります。`);
+      if (!ok) return;
+
+      updateBoard(board.id, (current) => ({ ...current, memo: "" }));
+      showToast("メモをリセットしました");
+    }
+
     function deleteActiveBoard() {
       const board = activeBoard();
       const ok = window.confirm(`「${board.name}」を削除しますか？
@@ -1728,6 +1761,9 @@
         <section class="panel">
           <div class="memo-title">▣ メモ</div>
           <textarea class="memo" data-input="memo" placeholder="気づき、今日のテーマ、次回やること。未入力ならこの薄い文字だけが見えます。">${escapeHtml(board.memo || "")}</textarea>
+          <div class="memo-actions">
+            <button class="memo-clear-btn" data-action="clear-memo">メモをリセット</button>
+          </div>
         </section>
 
         <section class="tools">
@@ -1757,6 +1793,7 @@
       console.assert(true, "included counters show percentage while excluded counters omit percentage instead of showing a large badge");
       console.assert(PRESETS.find((preset) => preset.key === "sf6").memo === "", "preset memo should be placeholder-only by default");
       console.assert(typeof window.confirm === "function", "delete confirmation should be available through window.confirm");
+      console.assert(typeof clearMemoText === "function", "memo text reset should be available as a separate action from count reset");
       console.assert(createInitialData().boards.length === 1, "deleting the final board can fall back to a fresh default board");
       console.assert(typeof state?.targetSettingsOpen !== "undefined", "target settings should support progressive disclosure state");
       console.assert(getTopCounter(counters).label === "勝ち", "getTopCounter should return highest counter");
@@ -1805,6 +1842,7 @@
       if (action === "target-all") applyTotalPreset("all");
       if (action === "target-none") applyTotalPreset("none");
       if (action === "reset") resetBoard();
+      if (action === "clear-memo") clearMemoText();
       if (action === "delete-board") deleteActiveBoard();
       if (action === "import") fileInput.click();
     });
