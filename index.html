@@ -6,84 +6,75 @@
   <meta name="theme-color" content="#eef2f7" />
   <title>Pocket Count</title>
   <style>
-    html,
+    html {
+      background: #eef2f7;
+    }
+
     body {
-      width: 100%;
-      height: 100%;
       margin: 0;
-      overflow: hidden;
+      min-height: 100svh;
       background: #eef2f7;
+      color: #172033;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    .app-frame {
-      width: 100%;
-      height: 100dvh;
-      min-height: 100vh;
-      border: 0;
-      display: block;
-      background: #eef2f7;
-    }
-
+    .loading,
     .fallback {
-      position: fixed;
-      inset: auto 16px 16px;
-      z-index: 10;
-      padding: 12px 14px;
+      margin: 16px;
+      padding: 14px 16px;
       border-radius: 16px;
       background: rgba(255, 255, 255, .92);
-      color: #172033;
-      font: 700 14px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       box-shadow: 0 12px 30px rgba(38, 53, 84, .14);
+      font-weight: 800;
+      line-height: 1.6;
     }
 
-    .fallback a {
+    a {
       color: #2563eb;
     }
   </style>
 </head>
 <body>
-  <iframe class="app-frame" src="./app.html" title="Pocket Count"></iframe>
+  <div class="loading">Pocket Countを読み込み中...</div>
   <noscript>
     <div class="fallback">JavaScriptが無効です。<a href="./app.html">アプリを開く</a></div>
   </noscript>
 
   <script>
     const resetButtonStyle = `
-      .tool-btn[data-action="reset"] {
-        border-color: rgba(249, 115, 22, .38) !important;
-        background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
-        color: #fff !important;
-        box-shadow: 0 12px 24px rgba(249, 115, 22, .26) !important;
-      }
+      <style id="reset-button-highlight-style">
+        .tool-btn[data-action="reset"] {
+          border-color: rgba(249, 115, 22, .38) !important;
+          background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
+          color: #fff !important;
+          box-shadow: 0 12px 24px rgba(249, 115, 22, .26) !important;
+        }
+      </style>
     `;
 
-    const frame = document.querySelector(".app-frame");
-
-    function injectResetButtonStyle() {
+    async function boot() {
       try {
-        const doc = frame.contentDocument;
-        if (!doc || !doc.head) return;
+        const response = await fetch("./app.html", { cache: "no-store" });
+        if (!response.ok) throw new Error(`Failed to load app.html: ${response.status}`);
 
-        let style = doc.getElementById("reset-button-highlight-style");
-        if (!style) {
-          style = doc.createElement("style");
-          style.id = "reset-button-highlight-style";
-          doc.head.appendChild(style);
-        }
+        let html = await response.text();
+        html = html.replace("</head>", `${resetButtonStyle}</head>`);
 
-        if (style.textContent !== resetButtonStyle) {
-          style.textContent = resetButtonStyle;
-        }
+        document.open();
+        document.write(html);
+        document.close();
       } catch (error) {
-        console.warn("Reset button style injection failed", error);
+        console.error(error);
+        document.body.innerHTML = `
+          <div class="fallback">
+            アプリの読み込みに失敗しました。<br>
+            <a href="./app.html">直接アプリを開く</a>
+          </div>
+        `;
       }
     }
 
-    frame.addEventListener("load", () => {
-      injectResetButtonStyle();
-      window.setTimeout(injectResetButtonStyle, 100);
-      window.setTimeout(injectResetButtonStyle, 500);
-    });
+    boot();
   </script>
 </body>
 </html>
