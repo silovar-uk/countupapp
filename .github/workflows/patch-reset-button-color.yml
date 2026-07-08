@@ -1,0 +1,61 @@
+name: Patch reset button color
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-reset-button-color.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make reset button orange
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          target = '''    .tool-btn.danger {
+            border-color: rgba(232, 117, 117, .18);
+            background: var(--danger-soft);
+            color: #c94f4f;
+          }
+          '''
+
+          replacement = '''    .tool-btn[data-action="reset"] {
+            border-color: rgba(249, 115, 22, .34);
+            background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            color: #fff;
+            box-shadow: 0 12px 24px rgba(249, 115, 22, .24);
+          }
+
+          .tool-btn.danger {
+            border-color: rgba(232, 117, 117, .18);
+            background: var(--danger-soft);
+            color: #c94f4f;
+          }
+          '''
+
+          if '.tool-btn[data-action="reset"]' not in text:
+              if target not in text:
+                  raise SystemExit('Target CSS block was not found.')
+              text = text.replace(target, replacement, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit patch and remove one-time workflow
+        run: |
+          rm .github/workflows/patch-reset-button-color.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/patch-reset-button-color.yml
+          git commit -m "Make reset button orange"
+          git push
