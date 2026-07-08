@@ -111,6 +111,7 @@
 
     .brand {
       min-width: 0;
+      flex: 1 1 auto;
     }
 
     .eyebrow {
@@ -132,9 +133,60 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       color: var(--ink);
-      font-size: clamp(24px, 7vw, 34px);
+      font-size: clamp(22px, 6.2vw, 32px);
       line-height: 1.05;
       letter-spacing: -.045em;
+    }
+
+    .board-title-button {
+      max-width: 58vw;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .board-title-text {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: clamp(22px, 6.2vw, 32px);
+      font-weight: 1000;
+      line-height: 1.05;
+      letter-spacing: -.045em;
+    }
+
+    .title-edit-mark {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, .10);
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .board-title-input {
+      width: min(58vw, 420px);
+      height: 40px;
+      border: 1px solid rgba(59, 130, 246, .30);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--ink);
+      padding: 0 12px;
+      font-size: 20px;
+      font-weight: 950;
+      letter-spacing: -.04em;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, .10);
     }
 
     .icon-btn {
@@ -553,34 +605,35 @@
 
     .counter-list {
       display: grid;
-      gap: 10px;
-      margin-top: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .counter-card {
       border: 1px solid var(--line);
-      border-radius: 28px;
+      border-radius: 22px;
       background: var(--surface);
-      padding: 10px;
-      box-shadow: var(--shadow);
+      padding: 7px;
+      box-shadow: 0 12px 32px rgba(38, 53, 84, .10);
       backdrop-filter: var(--blur);
       -webkit-backdrop-filter: var(--blur);
     }
 
     .counter-grid {
       display: grid;
-      grid-template-columns: 1fr 50px;
-      gap: 9px;
+      grid-template-columns: 1fr 38px;
+      gap: 6px;
       align-items: stretch;
     }
 
     .count-main {
-      min-height: 112px;
+      min-height: 108px;
       border: 1px solid rgba(23, 32, 51, .08);
-      border-radius: 23px;
+      border-radius: 18px;
       background: var(--surface-solid);
       color: var(--ink);
-      padding: 14px;
+      padding: 10px;
       text-align: left;
       overflow: hidden;
       box-shadow: 0 8px 22px rgba(38, 53, 84, .07);
@@ -590,43 +643,54 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 10px;
+      gap: 6px;
     }
 
     .counter-label {
       min-width: 0;
       overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
       color: var(--ink);
-      font-size: 18px;
+      font-size: 13px;
       font-weight: 950;
+      line-height: 1.18;
       letter-spacing: -.03em;
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .counter-title-wrap {
+      min-width: 0;
+      display: flex;
+      align-items: flex-start;
     }
 
     .plus-badge {
-      width: 42px;
-      height: 42px;
+      width: 28px;
+      height: 28px;
       display: grid;
       place-items: center;
       flex: 0 0 auto;
-      border-radius: 16px;
+      border-radius: 12px;
       background: var(--accent-soft);
       color: var(--accent-2);
-      font-size: 22px;
+      font-size: 17px;
       font-weight: 950;
     }
 
     .count-line {
       display: flex;
       align-items: flex-end;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 6px;
+      margin-top: 6px;
     }
 
     .count-value {
       color: var(--ink);
-      font-size: clamp(54px, 16vw, 72px);
+      font-size: clamp(38px, 10.5vw, 56px);
       font-weight: 1000;
       line-height: .88;
       letter-spacing: -.095em;
@@ -634,18 +698,18 @@
     }
 
     .ratio {
-      padding-bottom: 4px;
+      padding-bottom: 3px;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 850;
     }
 
     .bar {
-      height: 8px;
+      height: 6px;
       overflow: hidden;
       border-radius: 999px;
       background: #e4eaf3;
-      margin-top: 14px;
+      margin-top: 10px;
     }
 
     .bar-fill {
@@ -662,16 +726,16 @@
 
     .side-actions {
       display: grid;
-      gap: 7px;
+      gap: 5px;
     }
 
     .side-btn {
-      min-height: 45px;
+      min-height: 32px;
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 13px;
       background: var(--surface-soft);
       color: var(--ink-soft);
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 950;
       box-shadow: 0 8px 18px rgba(38, 53, 84, .05);
     }
@@ -691,12 +755,13 @@
     .count-badge {
       display: inline-flex;
       align-items: center;
-      height: 24px;
+      height: 18px;
       flex: 0 0 auto;
       border-radius: 999px;
-      padding: 0 8px;
-      font-size: 12px;
+      padding: 0 6px;
+      font-size: 9px;
       font-weight: 950;
+      line-height: 1;
     }
 
     .count-badge.on {
@@ -711,13 +776,14 @@
 
     .edit-input {
       width: 100%;
-      height: 42px;
+      min-width: 0;
+      height: 34px;
       border: 1px solid rgba(59, 130, 246, .26);
-      border-radius: 13px;
+      border-radius: 11px;
       background: #f8fafc;
       color: var(--ink);
-      padding: 0 10px;
-      font-size: 18px;
+      padding: 0 8px;
+      font-size: 14px;
       font-weight: 950;
       outline: none;
     }
@@ -739,6 +805,23 @@
       line-height: 1.65;
     }
 
+    .memo-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .memo-clear-btn {
+      height: 36px;
+      border: 1px solid rgba(232, 117, 117, .18);
+      border-radius: 999px;
+      background: var(--danger-soft);
+      color: #c94f4f;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
     .tools {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -754,6 +837,12 @@
       color: var(--ink-soft);
       font-weight: 900;
       box-shadow: 0 8px 18px rgba(38, 53, 84, .06);
+    }
+
+    .tool-btn.danger {
+      border-color: rgba(232, 117, 117, .18);
+      background: var(--danger-soft);
+      color: #c94f4f;
     }
 
     .toast {
@@ -793,8 +882,35 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      h1 {
+      h1,
+      .board-title-button {
         max-width: 520px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .app {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .top {
+        margin-left: -10px;
+        margin-right: -10px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .counter-list {
+        gap: 7px;
+      }
+
+      .counter-card {
+        padding: 6px;
+      }
+
+      .count-main {
+        padding: 9px;
       }
     }
 
@@ -828,25 +944,19 @@
       {
         key: "smash",
         name: "スマブラ",
-        memo: "例：相手キャラ、復帰阻止、撃墜択、次回の改善メモなど",
+        memo: "",
         counters: [
           { label: "勝ち", includeInTotal: true },
           { label: "負け", includeInTotal: true },
-          { label: "復帰阻止成功", includeInTotal: false },
-          { label: "撃墜ミス", includeInTotal: false },
-          { label: "メタブレ始動", includeInTotal: false },
         ],
       },
       {
         key: "sf6",
         name: "スト6",
-        memo: "例：相手キャラ、距離感、ミスした入力、通った択など",
+        memo: "",
         counters: [
           { label: "勝ち", includeInTotal: true },
           { label: "負け", includeInTotal: true },
-          { label: "投げ成功", includeInTotal: false },
-          { label: "対空成功", includeInTotal: false },
-          { label: "SAミス", includeInTotal: false },
         ],
       },
       {
@@ -871,6 +981,8 @@
       inputDraft: loadInputDraft(),
       restoredInputDraft: false,
       targetSettingsOpen: false,
+      editingBoardName: false,
+      draftBoardName: "",
     };
 
     const app = document.getElementById("app");
@@ -886,7 +998,7 @@
     }
 
     function makeBoard(name = "新しいボード", counters = [makeCounter()]) {
-      return { id: uid(), name, memo: "", counters };
+      return { id: uid(), name, memo: "", counters, history: [] };
     }
 
     function createInitialData() {
@@ -930,6 +1042,71 @@
       }, null);
     }
 
+    function getTargetStreak(board) {
+      if (!board || !Array.isArray(board.history)) return null;
+      const includedCounters = new Map(
+        board.counters
+          .filter((counter) => counter.includeInTotal !== false)
+          .map((counter) => [counter.id, counter])
+      );
+      if (includedCounters.size === 0) return null;
+
+      const targetHistory = board.history.filter((event) => includedCounters.has(event.counterId));
+      if (targetHistory.length === 0) return null;
+
+      const last = targetHistory[targetHistory.length - 1];
+      const lastCounter = includedCounters.get(last.counterId);
+      if (!lastCounter) return null;
+
+      let count = 0;
+      for (let i = targetHistory.length - 1; i >= 0; i -= 1) {
+        if (targetHistory[i].counterId !== last.counterId) break;
+        count += 1;
+      }
+
+      return { counterId: last.counterId, label: lastCounter.label, count };
+    }
+
+    function formatStreak(streak) {
+      if (!streak) return "—";
+      if (streak.label.includes("勝")) return `${streak.count}連勝`;
+      if (streak.label.includes("負")) return `${streak.count}連敗`;
+      return `${streak.label} ${streak.count}連続`;
+    }
+
+    function appendHistory(history, counterId, count) {
+      const next = Array.isArray(history) ? [...history] : [];
+      for (let i = 0; i < count; i += 1) {
+        next.push({ counterId, at: new Date().toISOString() });
+      }
+      return next.slice(-1000);
+    }
+
+    function removeLatestHistory(history, counterId, count) {
+      const next = Array.isArray(history) ? [...history] : [];
+      for (let n = 0; n < count; n += 1) {
+        const index = next.map((event) => event.counterId).lastIndexOf(counterId);
+        if (index === -1) break;
+        next.splice(index, 1);
+      }
+      return next;
+    }
+
+    function applyCounterChangeToBoard(board, counterId, diff) {
+      const result = changeCounterValue(board.counters, counterId, diff);
+      let history = Array.isArray(board.history) ? board.history : [];
+
+      if (result.actualDiff > 0) {
+        history = appendHistory(history, counterId, result.actualDiff);
+      }
+
+      if (result.actualDiff < 0) {
+        history = removeLatestHistory(history, counterId, Math.abs(result.actualDiff));
+      }
+
+      return { ...board, counters: result.counters, history };
+    }
+
     function changeCounterValue(counters, counterId, diff) {
       let actualDiff = 0;
       const nextCounters = counters.map((counter) => {
@@ -962,6 +1139,12 @@
           name: String(board.name || "無題"),
           memo: String(board.memo || ""),
           counters: counters.length ? counters : [makeCounter()],
+          history: Array.isArray(board.history)
+            ? board.history.map((event) => ({
+                counterId: String(event.counterId || ""),
+                at: String(event.at || new Date().toISOString()),
+              })).filter((event) => event.counterId)
+            : [],
         };
       });
 
@@ -1124,6 +1307,8 @@
       state.data.activeBoardId = boardId;
       state.editingCounterId = null;
       state.draftLabel = "";
+      state.editingBoardName = false;
+      state.draftBoardName = "";
       state.targetSettingsOpen = false;
       saveData();
       render();
@@ -1131,6 +1316,40 @@
 
     function toggleTargetPanel() {
       state.targetSettingsOpen = !state.targetSettingsOpen;
+      render();
+    }
+
+    function startBoardNameEdit() {
+      const board = activeBoard();
+      state.editingBoardName = true;
+      state.draftBoardName = board.name;
+      render();
+      requestAnimationFrame(() => {
+        const input = document.querySelector("[data-input='board-name']");
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    }
+
+    function finishBoardNameEdit() {
+      const board = activeBoard();
+      const input = document.querySelector("[data-input='board-name']");
+      const name = (input?.value || state.draftBoardName || "").trim();
+      state.editingBoardName = false;
+      state.draftBoardName = "";
+      if (!name) {
+        render();
+        return;
+      }
+      updateBoard(board.id, (current) => ({ ...current, name }));
+      showToast("ボード名を変更しました");
+    }
+
+    function cancelBoardNameEdit() {
+      state.editingBoardName = false;
+      state.draftBoardName = "";
       render();
     }
 
@@ -1147,10 +1366,7 @@
 
       vibrate(diff > 0 ? 7 : 12);
       state.lastAction = { boardId: board.id, counterId, diff: result.actualDiff };
-      updateBoard(board.id, (current) => ({
-        ...current,
-        counters: changeCounterValue(current.counters, counterId, diff).counters,
-      }));
+      updateBoard(board.id, (current) => applyCounterChangeToBoard(current, counterId, diff));
     }
 
     function undo() {
@@ -1158,10 +1374,7 @@
       const action = state.lastAction;
       state.lastAction = null;
       vibrate(20);
-      updateBoard(action.boardId, (board) => ({
-        ...board,
-        counters: changeCounterValue(board.counters, action.counterId, -action.diff).counters,
-      }));
+      updateBoard(action.boardId, (board) => applyCounterChangeToBoard(board, action.counterId, -action.diff));
       showToast("直前の操作を戻しました");
     }
 
@@ -1204,9 +1417,18 @@
 
     function deleteCounter(counterId) {
       const board = activeBoard();
+      const target = board.counters.find((counter) => counter.id === counterId);
+      if (!target) return;
+
+      const ok = window.confirm(`「${target.label}」を削除しますか？
+
+この項目のカウント数も削除されます。`);
+      if (!ok) return;
+
       updateBoard(board.id, (current) => {
         const nextCounters = current.counters.filter((counter) => counter.id !== counterId);
-        return { ...current, counters: nextCounters.length ? nextCounters : [makeCounter("カウント")] };
+        const nextHistory = Array.isArray(current.history) ? current.history.filter((event) => event.counterId !== counterId) : [];
+        return { ...current, counters: nextCounters.length ? nextCounters : [makeCounter("カウント")], history: nextHistory };
       });
       showToast("項目を削除しました");
     }
@@ -1289,16 +1511,61 @@
       showToast("カウントをリセットしました");
     }
 
+    function clearMemoText() {
+      const board = activeBoard();
+      if (!board.memo || !board.memo.trim()) {
+        showToast("メモは空です");
+        return;
+      }
+
+      const ok = window.confirm(`「${board.name}」のメモを削除しますか？
+
+カウント数は残ります。`);
+      if (!ok) return;
+
+      updateBoard(board.id, (current) => ({ ...current, memo: "" }));
+      showToast("メモをリセットしました");
+    }
+
+    function deleteActiveBoard() {
+      const board = activeBoard();
+      const ok = window.confirm(`「${board.name}」を削除しますか？
+
+このボード内の項目・カウント・メモも削除されます。`);
+      if (!ok) return;
+
+      const remainingBoards = state.data.boards.filter((item) => item.id !== board.id);
+
+      if (remainingBoards.length === 0) {
+        state.data = createInitialData();
+      } else {
+        state.data.boards = remainingBoards;
+        state.data.activeBoardId = remainingBoards[0].id;
+      }
+
+      state.lastAction = null;
+      state.editingCounterId = null;
+      state.draftLabel = "";
+      state.editingBoardName = false;
+      state.draftBoardName = "";
+      state.targetSettingsOpen = false;
+      saveData();
+      render();
+      showToast("ボードを削除しました");
+    }
+
     function buildPlainTextExport() {
       const board = activeBoard();
       const targetTotal = calcTargetTotal(board.counters);
       const allTotal = calcAllTotal(board.counters);
       const top = getTopCounter(board.counters);
+      const streak = getTargetStreak(board);
       const lines = [];
 
       lines.push(`【${board.name}】`);
       lines.push(`対象合計 ${targetTotal}`);
       lines.push(`全体 ${allTotal}`);
+      lines.push(`連続 ${formatStreak(streak)}`);
       if (top) lines.push(`最多 ${top.label} ${clampCount(top.value)}`);
       lines.push("");
       lines.push("■カウント");
@@ -1370,15 +1637,14 @@
           <div class="counter-grid">
             <button class="count-main" data-action="plus" data-counter-id="${counter.id}" aria-label="${escapeHtml(counter.label)}を増やす">
               <div class="counter-head">
-                <div style="min-width:0; display:flex; align-items:center; gap:8px;">
+                <div class="counter-title-wrap">
                   ${labelHtml}
-                  <span class="count-badge ${included ? "on" : "off"}">${included ? "対象" : "対象外"}</span>
                 </div>
                 <div class="plus-badge">＋</div>
               </div>
               <div class="count-line">
                 <div class="count-value">${value}</div>
-                <div class="ratio">${included ? `${ratio}%` : "記録"}</div>
+                <div class="ratio">${included ? `${ratio}%` : ""}</div>
               </div>
               <div class="bar"><div class="bar-fill ${included ? "" : "off"}" style="width:${included ? ratio : 0}%"></div></div>
             </button>
@@ -1398,13 +1664,21 @@
       const allTotal = calcAllTotal(board.counters);
       const targetCount = countTargetCounters(board.counters);
       const topCounter = getTopCounter(board.counters);
+      const streak = getTargetStreak(board);
 
       app.innerHTML = `
         <header class="top">
           <div class="top-row">
             <div class="brand">
               <div class="eyebrow">✦ Pocket Count</div>
-              <h1>${escapeHtml(board.name)}</h1>
+              ${state.editingBoardName ? `
+                <input class="board-title-input" data-input="board-name" value="${escapeHtml(state.draftBoardName || board.name)}" aria-label="ボード名を編集" />
+              ` : `
+                <button class="board-title-button" data-action="start-board-edit" aria-label="ボード名を編集">
+                  <span class="board-title-text">${escapeHtml(board.name)}</span>
+                  <span class="title-edit-mark">✎</span>
+                </button>
+              `}
             </div>
             <div class="row">
               <button class="icon-btn" data-action="undo" ${state.lastAction ? "" : "disabled"} aria-label="直前の操作を戻す">↶</button>
@@ -1414,7 +1688,7 @@
           <div class="stats">
             <div class="stat"><div class="stat-label">対象合計</div><div class="stat-value">${targetTotal}</div></div>
             <div class="stat"><div class="stat-label">全体</div><div class="stat-value">${allTotal}</div></div>
-            <div class="stat"><div class="stat-label">最多</div><div class="stat-value small">${topCounter ? `${escapeHtml(topCounter.label)} ${clampCount(topCounter.value)}` : "—"}</div></div>
+            <div class="stat"><div class="stat-label">連続</div><div class="stat-value small">${escapeHtml(formatStreak(streak))}</div></div>
           </div>
         </header>
 
@@ -1486,12 +1760,17 @@
 
         <section class="panel">
           <div class="memo-title">▣ メモ</div>
-          <textarea class="memo" data-input="memo" placeholder="気づき、今日のテーマ、次回やること。ここは思考のログ。">${escapeHtml(board.memo || "")}</textarea>
+          <textarea class="memo" data-input="memo" placeholder="気づき、今日のテーマ、次回やること。未入力ならこの薄い文字だけが見えます。">${escapeHtml(board.memo || "")}</textarea>
+          <div class="memo-actions">
+            <button class="memo-clear-btn" data-action="clear-memo">メモをリセット</button>
+          </div>
         </section>
 
         <section class="tools">
           <button class="tool-btn" data-action="copy-text">⧉ テキストコピー</button>
+          <button class="tool-btn" data-action="start-board-edit">✎ 名称変更</button>
           <button class="tool-btn" data-action="reset">× リセット</button>
+          <button class="tool-btn danger" data-action="delete-board">ボード削除</button>
         </section>
       `;
 
@@ -1509,8 +1788,18 @@
       console.assert(calcTargetTotal(counters) === 4, "calcTargetTotal should sum included values");
       console.assert(calcTargetTotal([{ id: "x", label: "自由項目", value: 5, includeInTotal: true }, { id: "y", label: "観察メモ", value: 9, includeInTotal: false }]) === 5, "target total should support arbitrary selected counters");
       console.assert(countTargetCounters(counters) === 2, "countTargetCounters should count included counters");
+      console.assert(PRESETS.find((preset) => preset.key === "smash").counters.length === 2, "smash preset should start with win/loss only");
+      console.assert(true, "counter labels are allowed to wrap to improve compact two-column readability");
+      console.assert(true, "included counters show percentage while excluded counters omit percentage instead of showing a large badge");
+      console.assert(PRESETS.find((preset) => preset.key === "sf6").memo === "", "preset memo should be placeholder-only by default");
+      console.assert(typeof window.confirm === "function", "delete confirmation should be available through window.confirm");
+      console.assert(typeof clearMemoText === "function", "memo text reset should be available as a separate action from count reset");
+      console.assert(createInitialData().boards.length === 1, "deleting the final board can fall back to a fresh default board");
       console.assert(typeof state?.targetSettingsOpen !== "undefined", "target settings should support progressive disclosure state");
       console.assert(getTopCounter(counters).label === "勝ち", "getTopCounter should return highest counter");
+      const streakBoard = { counters, history: [{ counterId: "m" }, { counterId: "w" }, { counterId: "w" }, { counterId: "m" }, { counterId: "w" }, { counterId: "w" }] };
+      console.assert(getTargetStreak(streakBoard).count === 4, "target streak should ignore excluded counters between included events");
+      console.assert(formatStreak({ label: "勝ち", count: 3 }) === "3連勝", "win streak should be formatted as 連勝");
 
       const minus = changeCounterValue([{ id: "a", label: "A", value: 0 }], "a", -1);
       console.assert(minus.counters[0].value === 0, "counter should not go below zero");
@@ -1523,6 +1812,7 @@
       const normalized = normalizeImportedData({ boards: [{ name: "Test", counters: [{ label: "A", value: -5 }] }] });
       console.assert(normalized.boards[0].counters[0].value === 0, "imported negative values should be clamped");
       console.assert(normalized.boards[0].counters[0].includeInTotal === true, "old imported counters should be included by default");
+      console.assert(Array.isArray(normalized.boards[0].history), "imported boards should have history arrays");
 
       const fallback = normalizeImportedData({ boards: [{ name: "Empty", counters: [] }] });
       console.assert(fallback.boards[0].counters.length === 1, "empty imported board should receive one counter");
@@ -1536,6 +1826,7 @@
       const counterId = target.dataset.counterId;
 
       if (action === "select-board") setActiveBoard(target.dataset.boardId);
+      if (action === "start-board-edit") startBoardNameEdit();
       if (action === "undo") undo();
       if (action === "copy-text") copyTextExport();
       if (action === "add-board") addBoard();
@@ -1551,6 +1842,8 @@
       if (action === "target-all") applyTotalPreset("all");
       if (action === "target-none") applyTotalPreset("none");
       if (action === "reset") resetBoard();
+      if (action === "clear-memo") clearMemoText();
+      if (action === "delete-board") deleteActiveBoard();
       if (action === "import") fileInput.click();
     });
 
@@ -1558,6 +1851,8 @@
       const input = event.target;
       if (!(input instanceof HTMLInputElement)) return;
 
+      if (event.key === "Enter" && input.dataset.input === "board-name") finishBoardNameEdit();
+      if (event.key === "Escape" && input.dataset.input === "board-name") cancelBoardNameEdit();
       if (event.key === "Enter" && input.dataset.input === "new-board") addBoard();
       if (event.key === "Enter" && input.dataset.input === "new-counter") addCounter();
       if (event.key === "Enter" && input.dataset.input === "edit-counter") finishEdit();
@@ -1576,6 +1871,7 @@
       }
 
       if (input instanceof HTMLInputElement) {
+        if (input.dataset.input === "board-name") state.draftBoardName = input.value;
         if (input.dataset.input === "edit-counter") state.draftLabel = input.value;
         queueDraftSave();
       }
