@@ -41,13 +41,25 @@
   </noscript>
 
   <script>
-    const resetButtonStyle = `
-      <style id="reset-button-highlight-style">
+    const appPatchStyle = `
+      <style id="countupapp-mobile-safe-area-style">
         .tool-btn[data-action="reset"] {
           border-color: rgba(249, 115, 22, .38) !important;
           background: linear-gradient(135deg, #f97316 0%, #fb923c 100%) !important;
           color: #fff !important;
           box-shadow: 0 12px 24px rgba(249, 115, 22, .26) !important;
+        }
+
+        body {
+          padding-bottom: env(safe-area-inset-bottom) !important;
+        }
+
+        .app {
+          padding-bottom: calc(112px + env(safe-area-inset-bottom)) !important;
+        }
+
+        .tools {
+          margin-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
         }
       </style>
     `;
@@ -58,7 +70,7 @@
         if (!response.ok) throw new Error(`Failed to load app.html: ${response.status}`);
 
         let html = await response.text();
-        html = html.replace("</head>", `${resetButtonStyle}</head>`);
+        html = html.replace("</head>", `${appPatchStyle}</head>`);
 
         document.open();
         document.write(html);
