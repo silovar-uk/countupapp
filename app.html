@@ -622,8 +622,27 @@
     .smash-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
     .smash-title { font-size: 16px; font-weight: 1000; }
     .smash-help { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 750; }
-    .smash-current { flex: 0 0 auto; border-radius: 999px; background: var(--game); color: #fff; padding: 7px 11px; font-size: 12px; font-weight: 950; }
-    .fighter-search { margin-top: 12px; }
+    .smash-current { flex: 0 0 auto; border-radius: 999px; background: var(--game-soft); color: #5144c8; padding: 7px 11px; font-size: 12px; font-weight: 950; }
+    .smash-command { margin-top: 12px; border: 1px solid rgba(109, 93, 252, .20); border-radius: 18px; background: linear-gradient(135deg, rgba(109, 93, 252, .12), rgba(59, 130, 246, .08)); padding: 11px; }
+    .smash-command-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #5144c8; font-size: 17px; font-weight: 1000; }
+    .smash-command-record { margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 850; }
+    .smash-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 9px; }
+    .smash-result-btn { min-height: 50px; border-radius: 15px; color: #fff; font-size: 15px; font-weight: 1000; box-shadow: 0 9px 20px rgba(38, 53, 84, .12); }
+    .smash-result-btn.win { background: linear-gradient(135deg, #35c99f, #18a97f); }
+    .smash-result-btn.loss { background: linear-gradient(135deg, #e87575, #d85c69); }
+    .fighter-search-wrap { position: relative; margin-top: 12px; }
+    .fighter-search { padding-right: 46px; }
+    .fighter-search-clear { position: absolute; top: 50%; right: 7px; width: 34px; height: 34px; transform: translateY(-50%); border-radius: 11px; background: var(--bg); color: var(--muted); font-size: 18px; font-weight: 900; }
+    .fighter-search-clear:active { transform: translateY(-50%) scale(.97); }
+    .fighter-groups { display: flex; gap: 6px; margin: 9px -2px 0; padding: 2px; overflow-x: auto; scrollbar-width: none; }
+    .fighter-groups::-webkit-scrollbar { display: none; }
+    .fighter-group-btn { min-width: 40px; height: 36px; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink-soft); padding: 0 10px; font-size: 12px; font-weight: 900; }
+    .fighter-group-btn.is-active { border-color: var(--game); background: var(--game); color: #fff; }
+    .fighter-recent { margin-top: 11px; }
+    .fighter-section-label { margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 950; letter-spacing: .05em; }
+    .fighter-recent-row { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+    .fighter-recent-row::-webkit-scrollbar { display: none; }
+    .fighter-recent-btn { min-width: 112px; min-height: 45px; flex: 0 0 auto; border: 1px solid rgba(109, 93, 252, .16); border-radius: 14px; background: var(--game-soft); color: #5144c8; padding: 7px 10px; text-align: left; font-size: 12px; font-weight: 950; }
     .fighter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 10px; }
     .fighter-btn { min-height: 48px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink-soft); padding: 7px 5px; font-size: 12px; font-weight: 900; line-height: 1.25; }
     .fighter-btn.is-selected { border-color: var(--game); background: var(--game-soft); color: #5144c8; box-shadow: 0 0 0 2px rgba(109, 93, 252, .10); }
@@ -971,6 +990,8 @@
       "リドリー", "リヒター", "リュウ", "リュカ", "リンク", "ルイージ", "ルカリオ", "ルフレ", "ロイ", "ロックマン", "ロゼッタ＆チコ", "ロボット", "ワリオ"
     ];
 
+    const FIGHTER_GROUPS = ["すべて", "あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"];
+
     let lastSavedText = "";
     let draftSaveTimer = null;
     let recoveredFromBackup = "";
@@ -1019,6 +1040,7 @@
       editingBoardName: false,
       draftBoardName: "",
       fighterQuery: "",
+      fighterGroup: "すべて",
     };
 
     const app = document.getElementById("app");
@@ -1350,6 +1372,7 @@
       state.draftBoardName = "";
       state.targetSettingsOpen = false;
       state.fighterQuery = "";
+      state.fighterGroup = "すべて";
       saveData();
       render();
     }
@@ -1452,6 +1475,47 @@
       const board = activeBoard();
       updateBoard(board.id, (current) => ({ ...current, selectedFighter: name }));
       showToast(`${name}を選択しました`);
+    }
+
+    function normalizeFighterSearch(value) {
+      return String(value || "")
+        .normalize("NFKC")
+        .toLocaleLowerCase("ja")
+        .replace(/[ァ-ヶ]/g, (character) => String.fromCharCode(character.charCodeAt(0) - 0x60))
+        .replace(/[\s・.／\/＆&()（）_-]/g, "");
+    }
+
+    function fighterGroup(name) {
+      const first = normalizeFighterSearch(name).charAt(0);
+      if (/^[あいうえおゔw]/.test(first)) return "あ";
+      if (/^[かきくけこがぎぐげご]/.test(first)) return "か";
+      if (/^[さしすせそざじずぜぞ]/.test(first)) return "さ";
+      if (/^[たちつてとだぢづでど]/.test(first)) return "た";
+      if (/^[なにぬねの]/.test(first)) return "な";
+      if (/^[はひふへほばびぶべぼぱぴぷぺぽ]/.test(first)) return "は";
+      if (/^[まみむめもm]/.test(first)) return "ま";
+      if (/^[やゆよ]/.test(first)) return "や";
+      if (/^[らりるれろ]/.test(first)) return "ら";
+      return "わ";
+    }
+
+    function recentFighters(board) {
+      const seen = new Set();
+      return [...(Array.isArray(board.history) ? board.history : [])]
+        .reverse()
+        .map((event) => event.fighter)
+        .filter((fighter) => SMASH_FIGHTERS.includes(fighter) && !seen.has(fighter) && seen.add(fighter))
+        .slice(0, 6);
+    }
+
+    function recordSmashResult(result) {
+      const board = activeBoard();
+      const counter = board.counters.find((item) => result === "win" ? item.label.includes("勝") : item.label.includes("負"));
+      if (!counter) {
+        showToast(result === "win" ? "勝ち項目がありません" : "負け項目がありません");
+        return;
+      }
+      changeCounter(counter.id, 1);
     }
 
     function fighterRecord(board, fighter) {
@@ -1732,8 +1796,13 @@
 
     function smashPanelHtml(board) {
       if (board.mode !== "smash") return "";
-      const query = state.fighterQuery.trim().toLocaleLowerCase("ja");
-      const fighters = SMASH_FIGHTERS.filter((fighter) => fighter.toLocaleLowerCase("ja").includes(query));
+      const query = normalizeFighterSearch(state.fighterQuery);
+      const fighters = SMASH_FIGHTERS.filter((fighter) => {
+        if (query) return normalizeFighterSearch(fighter).includes(query);
+        return state.fighterGroup === "すべて" || fighterGroup(fighter) === state.fighterGroup;
+      });
+      const recent = recentFighters(board);
+      const currentRecord = board.selectedFighter ? fighterRecord(board, board.selectedFighter) : null;
       return `
         <section class="smash-panel" aria-label="対戦相手ファイター">
           <div class="smash-head">
@@ -1743,7 +1812,34 @@
             </div>
             <div class="smash-current">${board.selectedFighter ? escapeHtml(board.selectedFighter) : "未選択"}</div>
           </div>
-          <input class="text-input fighter-search" data-input="fighter-search" value="${escapeHtml(state.fighterQuery)}" placeholder="ファイター名を検索" inputmode="search" autocomplete="off" />
+          ${board.selectedFighter ? `
+            <div class="smash-command">
+              <div class="smash-command-name">vs ${escapeHtml(board.selectedFighter)}</div>
+              <div class="smash-command-record">この相手との戦績 ${currentRecord.wins}勝 ${currentRecord.losses}敗</div>
+              <div class="smash-quick-actions">
+                <button class="smash-result-btn win" data-action="quick-win">勝ち ＋1</button>
+                <button class="smash-result-btn loss" data-action="quick-loss">負け ＋1</button>
+              </div>
+            </div>
+          ` : ""}
+          <div class="fighter-search-wrap">
+            <input class="text-input fighter-search" data-input="fighter-search" value="${escapeHtml(state.fighterQuery)}" placeholder="名前を検索（ひらがなでもOK）" inputmode="search" autocomplete="off" />
+            ${state.fighterQuery ? `<button class="fighter-search-clear" data-action="clear-fighter-search" aria-label="検索をクリア">×</button>` : ""}
+          </div>
+          <div class="fighter-groups" aria-label="50音で絞り込み">
+            ${FIGHTER_GROUPS.map((group) => `<button class="fighter-group-btn ${!query && state.fighterGroup === group ? "is-active" : ""}" data-action="filter-fighter-group" data-group="${group}">${group}</button>`).join("")}
+          </div>
+          ${recent.length ? `
+            <div class="fighter-recent">
+              <div class="fighter-section-label">最近使ったファイター</div>
+              <div class="fighter-recent-row">
+                ${recent.map((fighter) => {
+                  const record = fighterRecord(board, fighter);
+                  return `<button class="fighter-recent-btn" data-action="select-fighter" data-fighter="${escapeHtml(fighter)}">${escapeHtml(fighter)}<span class="fighter-record">${record.wins}勝 ${record.losses}敗</span></button>`;
+                }).join("")}
+              </div>
+            </div>
+          ` : ""}
           <div class="fighter-grid">
             ${fighters.length ? fighters.map((fighter) => {
               const record = fighterRecord(board, fighter);
@@ -1890,6 +1986,9 @@
       console.assert(countTargetCounters(counters) === 2, "countTargetCounters should count included counters");
       console.assert(PRESETS.find((preset) => preset.key === "smash").counters.length === 2, "smash preset should start with win/loss only");
       console.assert(SMASH_FIGHTERS.length === 89 && new Set(SMASH_FIGHTERS).size === 89, "smash fighter list should contain 89 unique entries");
+      console.assert(normalizeFighterSearch(" カービィ ") === normalizeFighterSearch("かーびぃ"), "fighter search should ignore script and whitespace differences");
+      console.assert(fighterGroup("Wii Fit トレーナー") === "あ" && fighterGroup("リドリー") === "ら", "fighter groups should follow Japanese reading order");
+      console.assert(recentFighters({ history: [{ fighter: "ゼルダ" }, { fighter: "カービィ" }, { fighter: "ゼルダ" }] }).join(",") === "ゼルダ,カービィ", "recent fighters should be unique and newest first");
       console.assert(true, "counter labels are allowed to wrap to improve compact two-column readability");
       console.assert(true, "included counters show percentage while excluded counters omit percentage instead of showing a large badge");
       console.assert(PRESETS.find((preset) => preset.key === "sf6").memo === "", "preset memo should be placeholder-only by default");
@@ -1938,6 +2037,18 @@
       if (action === "add-preset") addPresetBoard(target.dataset.presetKey);
       if (action === "add-counter") addCounter();
       if (action === "select-fighter") selectFighter(target.dataset.fighter || "");
+      if (action === "quick-win") recordSmashResult("win");
+      if (action === "quick-loss") recordSmashResult("loss");
+      if (action === "clear-fighter-search") {
+        state.fighterQuery = "";
+        render();
+        requestAnimationFrame(() => document.querySelector("[data-input='fighter-search']")?.focus());
+      }
+      if (action === "filter-fighter-group") {
+        state.fighterGroup = target.dataset.group || "すべて";
+        state.fighterQuery = "";
+        render();
+      }
       if (action === "plus") changeCounter(counterId, 1);
       if (action === "minus") changeCounter(counterId, -1);
       if (action === "delete-counter") deleteCounter(counterId);
