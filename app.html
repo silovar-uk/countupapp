@@ -610,6 +610,27 @@
       margin-top: 10px;
     }
 
+    .smash-panel {
+      margin-top: 10px;
+      border: 1px solid rgba(109, 93, 252, .18);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .78);
+      padding: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .smash-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .smash-title { font-size: 16px; font-weight: 1000; }
+    .smash-help { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 750; }
+    .smash-current { flex: 0 0 auto; border-radius: 999px; background: var(--game); color: #fff; padding: 7px 11px; font-size: 12px; font-weight: 950; }
+    .fighter-search { margin-top: 12px; }
+    .fighter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 10px; }
+    .fighter-btn { min-height: 48px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink-soft); padding: 7px 5px; font-size: 12px; font-weight: 900; line-height: 1.25; }
+    .fighter-btn.is-selected { border-color: var(--game); background: var(--game-soft); color: #5144c8; box-shadow: 0 0 0 2px rgba(109, 93, 252, .10); }
+    .fighter-record { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+    .fighter-btn.is-selected .fighter-record { color: #6d5dfc; }
+    .fighter-empty { grid-column: 1 / -1; padding: 18px; color: var(--muted); text-align: center; font-weight: 850; }
+
     .counter-card {
       border: 1px solid var(--line);
       border-radius: 22px;
@@ -886,6 +907,8 @@
       .board-title-button {
         max-width: 520px;
       }
+
+      .fighter-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
 
     @media (max-width: 380px) {
@@ -934,7 +957,19 @@
     const BACKUP_KEY = `${STORAGE_KEY}:backup`;
     const SECOND_BACKUP_KEY = `${STORAGE_KEY}:backup2`;
     const DRAFT_KEY = `${STORAGE_KEY}:draft`;
-    const SAVE_SCHEMA_VERSION = 4;
+    const SAVE_SCHEMA_VERSION = 5;
+
+    // 表示順を明示的に固定し、端末やブラウザの照合順に左右されないようにする。
+    const SMASH_FIGHTERS = [
+      "アイスクライマー", "アイク", "インクリング", "Wii Fit トレーナー", "ウルフ", "カービィ", "カズヤ", "ガオガエン", "カムイ", "ガノンドロフ", "キャプテン・ファルコン",
+      "キングクルール", "クラウド", "クッパ", "クッパJr.", "クロム", "ゲッコウガ", "ケン", "こどもリンク", "サムス", "シーク",
+      "しずえ", "シモン", "シュルク", "ジョーカー", "スティーブ／アレックス", "スネーク", "ゼニガメ", "ゼルダ", "ゼロスーツサムス", "セフィロス", "ソニック", "ソラ",
+      "ダークサムス", "ダックハント", "デイジー", "ディディーコング", "デデデ", "テリー", "トゥーンリンク", "ドクターマリオ", "ドンキーコング",
+      "ネス", "パックマン", "パックンフラワー", "パルテナ", "バンジョー＆カズーイ", "ピーチ", "ピカチュウ", "ピクミン＆オリマー", "ピット", "ヒカリ", "ピチュー",
+      "ファルコ", "フォックス", "フシギソウ", "ブラックピット", "プリン", "ベヨネッタ", "ベレト／ベレス", "ホムラ", "ポケモントレーナー", "マリオ", "マルス", "Mr.ゲーム＆ウォッチ",
+      "Mii 格闘タイプ", "Mii 剣術タイプ", "Mii 射撃タイプ", "ミェンミェン", "ミュウツー", "むらびと", "メタナイト", "勇者", "ヨッシー", "リザードン", "リトル・マック",
+      "リドリー", "リヒター", "リュウ", "リュカ", "リンク", "ルイージ", "ルカリオ", "ルフレ", "ロイ", "ロックマン", "ロゼッタ＆チコ", "ロボット", "ワリオ"
+    ];
 
     let lastSavedText = "";
     let draftSaveTimer = null;
@@ -983,6 +1018,7 @@
       targetSettingsOpen: false,
       editingBoardName: false,
       draftBoardName: "",
+      fighterQuery: "",
     };
 
     const app = document.getElementById("app");
@@ -997,8 +1033,8 @@
       return { id: uid(), label, value, memo, includeInTotal };
     }
 
-    function makeBoard(name = "新しいボード", counters = [makeCounter()]) {
-      return { id: uid(), name, memo: "", counters, history: [] };
+    function makeBoard(name = "新しいボード", counters = [makeCounter()], mode = "standard") {
+      return { id: uid(), name, memo: "", counters, history: [], mode, selectedFighter: "" };
     }
 
     function createInitialData() {
@@ -1074,10 +1110,10 @@
       return `${streak.label} ${streak.count}連続`;
     }
 
-    function appendHistory(history, counterId, count) {
+    function appendHistory(history, counterId, count, fighter = "") {
       const next = Array.isArray(history) ? [...history] : [];
       for (let i = 0; i < count; i += 1) {
-        next.push({ counterId, at: new Date().toISOString() });
+        next.push({ counterId, at: new Date().toISOString(), fighter });
       }
       return next.slice(-1000);
     }
@@ -1097,7 +1133,7 @@
       let history = Array.isArray(board.history) ? board.history : [];
 
       if (result.actualDiff > 0) {
-        history = appendHistory(history, counterId, result.actualDiff);
+        history = appendHistory(history, counterId, result.actualDiff, board.mode === "smash" ? board.selectedFighter : "");
       }
 
       if (result.actualDiff < 0) {
@@ -1143,8 +1179,11 @@
             ? board.history.map((event) => ({
                 counterId: String(event.counterId || ""),
                 at: String(event.at || new Date().toISOString()),
+                fighter: SMASH_FIGHTERS.includes(String(event.fighter || "")) ? String(event.fighter) : "",
               })).filter((event) => event.counterId)
             : [],
+          mode: board.mode === "smash" ? "smash" : "standard",
+          selectedFighter: SMASH_FIGHTERS.includes(String(board.selectedFighter || "")) ? String(board.selectedFighter) : "",
         };
       });
 
@@ -1310,6 +1349,7 @@
       state.editingBoardName = false;
       state.draftBoardName = "";
       state.targetSettingsOpen = false;
+      state.fighterQuery = "";
       saveData();
       render();
     }
@@ -1361,6 +1401,11 @@
 
     function changeCounter(counterId, diff) {
       const board = activeBoard();
+      if (board.mode === "smash" && diff > 0 && !board.selectedFighter) {
+        showToast("先に対戦相手を選んでください");
+        document.querySelector(".fighter-search")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
       const result = changeCounterValue(board.counters, counterId, diff);
       if (result.actualDiff === 0) return;
 
@@ -1378,8 +1423,8 @@
       showToast("直前の操作を戻しました");
     }
 
-    function addBoardFromValues(name, counters, memo = "") {
-      const board = makeBoard(name, counters.map((counter) => makeCounter(counter.label, 0, "", counter.includeInTotal !== false)));
+    function addBoardFromValues(name, counters, memo = "", mode = "standard") {
+      const board = makeBoard(name, counters.map((counter) => makeCounter(counter.label, 0, "", counter.includeInTotal !== false)), mode);
       board.memo = memo;
       state.data.boards.push(board);
       state.data.activeBoardId = board.id;
@@ -1399,7 +1444,24 @@
     function addPresetBoard(presetKey) {
       const preset = PRESETS.find((item) => item.key === presetKey);
       if (!preset) return;
-      addBoardFromValues(preset.name, preset.counters, preset.memo);
+      addBoardFromValues(preset.name, preset.counters, preset.memo, preset.key === "smash" ? "smash" : "standard");
+    }
+
+    function selectFighter(name) {
+      if (!SMASH_FIGHTERS.includes(name)) return;
+      const board = activeBoard();
+      updateBoard(board.id, (current) => ({ ...current, selectedFighter: name }));
+      showToast(`${name}を選択しました`);
+    }
+
+    function fighterRecord(board, fighter) {
+      const win = board.counters.find((counter) => counter.label.includes("勝"));
+      const loss = board.counters.find((counter) => counter.label.includes("負"));
+      const events = Array.isArray(board.history) ? board.history.filter((event) => event.fighter === fighter) : [];
+      return {
+        wins: win ? events.filter((event) => event.counterId === win.id).length : 0,
+        losses: loss ? events.filter((event) => event.counterId === loss.id).length : 0,
+      };
     }
 
     function addCounter() {
@@ -1507,6 +1569,7 @@
       updateBoard(board.id, (current) => ({
         ...current,
         counters: current.counters.map((counter) => ({ ...counter, value: 0 })),
+        history: [],
       }));
       showToast("カウントをリセットしました");
     }
@@ -1573,6 +1636,15 @@
         const mark = counter.includeInTotal === false ? "対象外" : "対象";
         lines.push(`・${counter.label} ${clampCount(counter.value)}（${mark}）`);
       });
+
+      if (board.mode === "smash") {
+        lines.push("");
+        lines.push("■ファイター別");
+        SMASH_FIGHTERS.forEach((fighter) => {
+          const record = fighterRecord(board, fighter);
+          if (record.wins + record.losses > 0) lines.push(`・${fighter} ${record.wins}勝${record.losses}敗`);
+        });
+      }
 
       if ((board.memo || "").trim()) {
         lines.push("");
@@ -1655,6 +1727,32 @@
             </div>
           </div>
         </article>
+      `;
+    }
+
+    function smashPanelHtml(board) {
+      if (board.mode !== "smash") return "";
+      const query = state.fighterQuery.trim().toLocaleLowerCase("ja");
+      const fighters = SMASH_FIGHTERS.filter((fighter) => fighter.toLocaleLowerCase("ja").includes(query));
+      return `
+        <section class="smash-panel" aria-label="対戦相手ファイター">
+          <div class="smash-head">
+            <div>
+              <div class="smash-title">対戦相手を選択</div>
+              <div class="smash-help">選んだファイターに、次の勝ち・負けが記録されます</div>
+            </div>
+            <div class="smash-current">${board.selectedFighter ? escapeHtml(board.selectedFighter) : "未選択"}</div>
+          </div>
+          <input class="text-input fighter-search" data-input="fighter-search" value="${escapeHtml(state.fighterQuery)}" placeholder="ファイター名を検索" inputmode="search" autocomplete="off" />
+          <div class="fighter-grid">
+            ${fighters.length ? fighters.map((fighter) => {
+              const record = fighterRecord(board, fighter);
+              return `<button class="fighter-btn ${board.selectedFighter === fighter ? "is-selected" : ""}" data-action="select-fighter" data-fighter="${escapeHtml(fighter)}">
+                ${escapeHtml(fighter)}<span class="fighter-record">${record.wins}勝 ${record.losses}敗</span>
+              </button>`;
+            }).join("") : `<div class="fighter-empty">該当するファイターがいません</div>`}
+          </div>
+        </section>
       `;
     }
 
@@ -1751,6 +1849,8 @@
           ${board.counters.map((counter) => counterHtml(counter, targetTotal, allTotal)).join("")}
         </main>
 
+        ${smashPanelHtml(board)}
+
         <section class="panel">
           <div class="input-row">
             <input class="text-input" data-input="new-counter" placeholder="項目名を入力" />
@@ -1789,6 +1889,7 @@
       console.assert(calcTargetTotal([{ id: "x", label: "自由項目", value: 5, includeInTotal: true }, { id: "y", label: "観察メモ", value: 9, includeInTotal: false }]) === 5, "target total should support arbitrary selected counters");
       console.assert(countTargetCounters(counters) === 2, "countTargetCounters should count included counters");
       console.assert(PRESETS.find((preset) => preset.key === "smash").counters.length === 2, "smash preset should start with win/loss only");
+      console.assert(SMASH_FIGHTERS.length === 89 && new Set(SMASH_FIGHTERS).size === 89, "smash fighter list should contain 89 unique entries");
       console.assert(true, "counter labels are allowed to wrap to improve compact two-column readability");
       console.assert(true, "included counters show percentage while excluded counters omit percentage instead of showing a large badge");
       console.assert(PRESETS.find((preset) => preset.key === "sf6").memo === "", "preset memo should be placeholder-only by default");
@@ -1816,6 +1917,10 @@
 
       const fallback = normalizeImportedData({ boards: [{ name: "Empty", counters: [] }] });
       console.assert(fallback.boards[0].counters.length === 1, "empty imported board should receive one counter");
+
+      const smashData = normalizeImportedData({ boards: [{ name: "スマブラ", mode: "smash", selectedFighter: "カービィ", counters: [{ id: "w", label: "勝ち", value: 1 }], history: [{ counterId: "w", fighter: "カービィ" }] }] });
+      console.assert(smashData.boards[0].mode === "smash" && smashData.boards[0].selectedFighter === "カービィ", "smash board settings should survive normalization");
+      console.assert(fighterRecord(smashData.boards[0], "カービィ").wins === 1, "fighter records should be derived from linked history");
     }
 
     app.addEventListener("click", (event) => {
@@ -1832,6 +1937,7 @@
       if (action === "add-board") addBoard();
       if (action === "add-preset") addPresetBoard(target.dataset.presetKey);
       if (action === "add-counter") addCounter();
+      if (action === "select-fighter") selectFighter(target.dataset.fighter || "");
       if (action === "plus") changeCounter(counterId, 1);
       if (action === "minus") changeCounter(counterId, -1);
       if (action === "delete-counter") deleteCounter(counterId);
@@ -1871,6 +1977,17 @@
       }
 
       if (input instanceof HTMLInputElement) {
+        if (input.dataset.input === "fighter-search") {
+          state.fighterQuery = input.value;
+          const selectionStart = input.selectionStart;
+          render();
+          requestAnimationFrame(() => {
+            const next = document.querySelector("[data-input='fighter-search']");
+            next?.focus();
+            next?.setSelectionRange(selectionStart, selectionStart);
+          });
+          return;
+        }
         if (input.dataset.input === "board-name") state.draftBoardName = input.value;
         if (input.dataset.input === "edit-counter") state.draftLabel = input.value;
         queueDraftSave();
