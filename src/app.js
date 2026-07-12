@@ -28,6 +28,16 @@ app.addEventListener("click", (event) => {
     state.fighterQuery = "";
     render();
   }
+  if (action === "filter-match-history") {
+    state.matchHistoryFilter = target.dataset.filter || "all";
+    state.matchHistoryLimit = 10;
+    render();
+  }
+  if (action === "toggle-match-history") {
+    const total = smashMatchHistory(activeBoard()).filter((match) => state.matchHistoryFilter === "all" || match.result === state.matchHistoryFilter).length;
+    state.matchHistoryLimit = state.matchHistoryLimit < total ? state.matchHistoryLimit + 10 : 10;
+    render();
+  }
   if (action === "plus") changeCounter(counterId, 1);
   if (action === "minus") changeCounter(counterId, -1);
   if (action === "delete-counter") deleteCounter(counterId);
@@ -110,4 +120,3 @@ render();
 if (recoveredFromBackup) {
   setTimeout(() => showToast("バックアップから復元しました"), 240);
 }
-
