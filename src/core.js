@@ -26,6 +26,8 @@ const state = {
   draftBoardName: "",
   fighterQuery: "",
   fighterGroup: "すべて",
+  matchHistoryFilter: "all",
+  matchHistoryLimit: 10,
 };
 
 const app = document.getElementById("app");
@@ -358,6 +360,8 @@ function setActiveBoard(boardId) {
   state.targetSettingsOpen = false;
   state.fighterQuery = "";
   state.fighterGroup = "すべて";
+  state.matchHistoryFilter = "all";
+  state.matchHistoryLimit = 10;
   saveData();
   render();
 }
@@ -511,6 +515,73 @@ function fighterRecord(board, fighter) {
     wins: win ? events.filter((event) => event.counterId === win.id).length : 0,
     losses: loss ? events.filter((event) => event.counterId === loss.id).length : 0,
   };
+}
+
+function smashMatchHistory(board) {
+  const resultByCounterId = new Map();
+  board.counters.forEach((counter) => {
+    if (counter.label.includes("勝")) resultByCounterId.set(counter.id, "win");
+    if (counter.label.includes("負")) resultByCounterId.set(counter.id, "loss");
+  });
+
+  return [...(Array.isArray(board.history) ? board.history : [])]
+    .reverse()
+    .filter((event) => SMASH_FIGHTERS.includes(event.fighter) && resultByCounterId.has(event.counterId))
+    .map((event) => ({
+      fighter: event.fighter,
+      result: resultByCounterId.get(event.counterId),
+      at: event.at,
+    }));
+}
+
+function formatMatchTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "日時不明";
+  return new Intl.DateTimeFormat("ja-JP", {
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function matchHistoryHtml(board) {
+  const history = smashMatchHistory(board);
+  const wins = history.filter((match) => match.result === "win").length;
+  const losses = history.length - wins;
+  const winRate = history.length ? Math.round((wins / history.length) * 100) : 0;
+  const filtered = state.matchHistoryFilter === "all"
+    ? history
+    : history.filter((match) => match.result === state.matchHistoryFilter);
+  const visible = filtered.slice(0, state.matchHistoryLimit);
+
+  return `
+    <section class="match-history" aria-label="対戦履歴">
+      <div class="match-history-head">
+        <div>
+          <div class="match-history-title">対戦履歴</div>
+          <div class="match-history-summary">全${history.length}戦 ${wins}勝 ${losses}敗${history.length ? `・勝率${winRate}%` : ""}</div>
+        </div>
+        <div class="match-history-filters" aria-label="履歴を絞り込み">
+          ${[["all", "すべて"], ["win", "勝ち"], ["loss", "負け"]].map(([value, label]) => `<button class="match-history-filter ${state.matchHistoryFilter === value ? "is-active" : ""}" data-action="filter-match-history" data-filter="${value}" aria-label="履歴：${label}">${label}</button>`).join("")}
+        </div>
+      </div>
+      ${visible.length ? `
+        <div class="match-history-list">
+          ${visible.map((match) => `
+            <div class="match-history-row">
+              <span class="match-result ${match.result}">${match.result === "win" ? "WIN" : "LOSS"}</span>
+              <span class="match-opponent">${escapeHtml(match.fighter)}</span>
+              <time class="match-time">${escapeHtml(formatMatchTime(match.at))}</time>
+            </div>
+          `).join("")}
+        </div>
+      ` : `<div class="match-history-empty">${history.length ? "条件に合う履歴がありません" : "勝敗を記録すると、ここに対戦履歴が並びます"}</div>`}
+      ${filtered.length > 10 ? `
+        <button class="match-history-more" data-action="toggle-match-history">${state.matchHistoryLimit < filtered.length ? `さらに表示（残り${filtered.length - visible.length}件）` : "10件表示に戻す"}</button>
+      ` : ""}
+    </section>
+  `;
 }
 
 function addCounter() {
@@ -807,6 +878,7 @@ function smashPanelHtml(board) {
           </div>
         </div>
       ` : ""}
+      ${matchHistoryHtml(board)}
       <div class="fighter-search-wrap">
         <input class="text-input fighter-search" data-input="fighter-search" value="${escapeHtml(state.fighterQuery)}" placeholder="名前を検索（ひらがなでもOK）" inputmode="search" autocomplete="off" />
         ${state.fighterQuery ? `<button class="fighter-search-clear" data-action="clear-fighter-search" aria-label="検索をクリア">×</button>` : ""}
@@ -974,6 +1046,7 @@ function runSelfTests() {
   console.assert(normalizeFighterSearch(" カービィ ") === normalizeFighterSearch("かーびぃ"), "fighter search should ignore script and whitespace differences");
   console.assert(fighterGroup("Wii Fit トレーナー") === "あ" && fighterGroup("リドリー") === "ら", "fighter groups should follow Japanese reading order");
   console.assert(recentFighters({ history: [{ fighter: "ゼルダ" }, { fighter: "カービィ" }, { fighter: "ゼルダ" }] }).join(",") === "ゼルダ,カービィ", "recent fighters should be unique and newest first");
+  console.assert(smashMatchHistory({ counters: [{ id: "w", label: "勝ち" }, { id: "l", label: "負け" }], history: [{ counterId: "w", fighter: "カービィ", at: "2026-01-01" }, { counterId: "l", fighter: "ゼルダ", at: "2026-01-02" }] })[0].fighter === "ゼルダ", "match history should show the newest fight first");
   console.assert(true, "counter labels are allowed to wrap to improve compact two-column readability");
   console.assert(true, "included counters show percentage while excluded counters omit percentage instead of showing a large badge");
   console.assert(PRESETS.find((preset) => preset.key === "sf6").memo === "", "preset memo should be placeholder-only by default");
@@ -1006,5 +1079,4 @@ function runSelfTests() {
   console.assert(smashData.boards[0].mode === "smash" && smashData.boards[0].selectedFighter === "カービィ", "smash board settings should survive normalization");
   console.assert(fighterRecord(smashData.boards[0], "カービィ").wins === 1, "fighter records should be derived from linked history");
 }
-
 
