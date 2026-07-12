@@ -640,10 +640,12 @@
     .match-history-filter { height: 30px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--muted); padding: 0 9px; font-size: 11px; font-weight: 900; }
     .match-history-filter.is-active { border-color: var(--game); background: var(--game); color: #fff; }
     .match-history-list { display: grid; gap: 6px; margin-top: 10px; }
-    .match-history-row { display: grid; grid-template-columns: 45px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 42px; border-radius: 13px; background: #fff; padding: 7px 9px; }
-    .match-result { display: grid; place-items: center; height: 26px; border-radius: 9px; color: #fff; font-size: 10px; font-weight: 1000; letter-spacing: .04em; }
-    .match-result.win { background: #20b486; }
-    .match-result.loss { background: #dc6973; }
+    .match-history-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 44px; border: 1px solid transparent; border-radius: 13px; padding: 7px 9px; }
+    .match-history-row.win { background: #fff; }
+    .match-history-row.loss { border-color: var(--line); background: var(--bg); }
+    .match-result { display: grid; place-items: center; height: 28px; font-size: 10px; font-weight: 1000; letter-spacing: .03em; }
+    .match-result.win { border-radius: 999px; background: #147c60; color: #fff; }
+    .match-result.loss { border: 2px dashed #a64e58; border-radius: 5px; background: #fff; color: #7f3039; }
     .match-opponent { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--ink); font-size: 13px; font-weight: 950; }
     .match-time { color: var(--muted); font-size: 10px; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .match-history-empty { margin-top: 10px; border-radius: 13px; background: var(--bg); padding: 15px; color: var(--muted); text-align: center; font-size: 12px; font-weight: 800; }
