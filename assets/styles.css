@@ -623,10 +623,12 @@
     .smash-result-btn.win { background: linear-gradient(135deg, #35c99f, #18a97f); }
     .smash-result-btn.loss { background: linear-gradient(135deg, #e87575, #d85c69); }
     .match-history { margin-top: 12px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255, 255, 255, .76); padding: 11px; }
-    .match-history-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .match-history-head { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; background: transparent; padding: 1px; text-align: left; }
+    .match-history-chevron { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 auto; border-radius: 10px; background: var(--bg); color: var(--game); font-size: 15px; font-weight: 1000; transition: transform .18s ease; }
+    .match-history.is-open .match-history-chevron { transform: rotate(180deg); }
     .match-history-title { color: var(--ink); font-size: 14px; font-weight: 1000; }
     .match-history-summary { margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 800; }
-    .match-history-filters { display: flex; gap: 5px; flex: 0 0 auto; }
+    .match-history-filters { display: flex; gap: 5px; margin-top: 10px; }
     .match-history-filter { height: 30px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--muted); padding: 0 9px; font-size: 11px; font-weight: 900; }
     .match-history-filter.is-active { border-color: var(--game); background: var(--game); color: #fff; }
     .match-history-list { display: grid; gap: 6px; margin-top: 10px; }
