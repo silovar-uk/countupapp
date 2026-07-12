@@ -33,6 +33,10 @@ app.addEventListener("click", (event) => {
     state.matchHistoryLimit = 10;
     render();
   }
+  if (action === "toggle-match-history-open") {
+    state.matchHistoryOpen = !state.matchHistoryOpen;
+    render();
+  }
   if (action === "toggle-match-history") {
     const total = smashMatchHistory(activeBoard()).filter((match) => state.matchHistoryFilter === "all" || match.result === state.matchHistoryFilter).length;
     state.matchHistoryLimit = state.matchHistoryLimit < total ? state.matchHistoryLimit + 10 : 10;
