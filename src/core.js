@@ -976,6 +976,13 @@ function render() {
       </div>
     </header>
 
+    <section class="panel" aria-label="ボードを追加">
+      <div class="input-row">
+        <input class="text-input" data-input="new-board" placeholder="ボード名を入力" />
+        <button class="small-btn" data-action="add-board">追加</button>
+      </div>
+    </section>
+
     <section class="boards-wrap" aria-label="ボード一覧">
       <div class="boards">
         ${state.data.boards.map((item) => `
@@ -986,6 +993,14 @@ function render() {
             </span>
             <span aria-hidden="true">◉</span>
           </button>
+        `).join("")}
+      </div>
+    </section>
+
+    <section class="panel" aria-label="プリセットからボードを追加">
+      <div class="preset-row" aria-label="プリセット">
+        ${PRESETS.map((preset) => `
+          <button class="preset-btn" data-action="add-preset" data-preset-key="${preset.key}">＋ ${escapeHtml(preset.name)}</button>
         `).join("")}
       </div>
     </section>
@@ -1016,18 +1031,6 @@ function render() {
             `;
           }).join("")}
         </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="input-row">
-        <input class="text-input" data-input="new-board" placeholder="ボード名を入力" />
-        <button class="small-btn" data-action="add-board">追加</button>
-      </div>
-      <div class="preset-row" aria-label="プリセット">
-        ${PRESETS.map((preset) => `
-          <button class="preset-btn" data-action="add-preset" data-preset-key="${preset.key}">＋ ${escapeHtml(preset.name)}</button>
-        `).join("")}
       </div>
     </section>
 
