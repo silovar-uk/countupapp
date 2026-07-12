@@ -499,6 +499,7 @@ function normalizeFighterSearch(value) {
 }
 
 function fighterGroup(name) {
+  if (name === "勇者") return "や";
   const first = normalizeFighterSearch(name).charAt(0);
   if (/^[あいうえおゔw]/.test(first)) return "あ";
   if (/^[かきくけこがぎぐげご]/.test(first)) return "か";
@@ -1083,7 +1084,7 @@ function runSelfTests() {
   console.assert(PRESETS.find((preset) => preset.key === "smash").counters.length === 2, "smash preset should start with win/loss only");
   console.assert(SMASH_FIGHTERS.length === 89 && new Set(SMASH_FIGHTERS).size === 89, "smash fighter list should contain 89 unique entries");
   console.assert(normalizeFighterSearch(" カービィ ") === normalizeFighterSearch("かーびぃ"), "fighter search should ignore script and whitespace differences");
-  console.assert(fighterGroup("Wii Fit トレーナー") === "あ" && fighterGroup("リドリー") === "ら", "fighter groups should follow Japanese reading order");
+  console.assert(fighterGroup("Wii Fit トレーナー") === "あ" && fighterGroup("勇者") === "や" && fighterGroup("リドリー") === "ら", "fighter groups should follow Japanese reading order, including kanji names");
   console.assert(recentFighters({ history: [{ fighter: "ゼルダ" }, { fighter: "カービィ" }, { fighter: "ゼルダ" }] }).join(",") === "ゼルダ,カービィ", "recent fighters should be unique and newest first");
   console.assert(smashMatchHistory({ counters: [{ id: "w", label: "勝ち" }, { id: "l", label: "負け" }], history: [{ counterId: "w", fighter: "カービィ", at: "2026-01-01" }, { counterId: "l", fighter: "ゼルダ", at: "2026-01-02" }] })[0].fighter === "ゼルダ", "match history should show the newest fight first");
   console.assert(true, "counter labels are allowed to wrap to improve compact two-column readability");
