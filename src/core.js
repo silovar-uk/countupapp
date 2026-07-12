@@ -586,7 +586,10 @@ function matchHistoryHtml(board) {
           <div class="match-history-title">対戦履歴</div>
           <div class="match-history-summary">全${history.length}戦 ${wins}勝 ${losses}敗${history.length ? `・勝率${winRate}%` : ""}</div>
         </div>
-        <span class="match-history-chevron" aria-hidden="true">⌄</span>
+        <span class="match-history-open-control" aria-hidden="true">
+          <span class="match-history-open-label">${state.matchHistoryOpen ? "閉じる" : "履歴を見る"}</span>
+          <span class="match-history-chevron">⌄</span>
+        </span>
       </button>
       ${state.matchHistoryOpen ? `
         <div class="match-history-filters" aria-label="履歴を絞り込み">
