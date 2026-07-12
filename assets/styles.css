@@ -622,6 +622,8 @@
     .smash-result-btn { min-height: 50px; border-radius: 15px; color: #fff; font-size: 15px; font-weight: 1000; box-shadow: 0 9px 20px rgba(38, 53, 84, .12); }
     .smash-result-btn.win { background: linear-gradient(135deg, #35c99f, #18a97f); }
     .smash-result-btn.loss { background: linear-gradient(135deg, #e87575, #d85c69); }
+    .match-feedback { display: flex; align-items: center; gap: 9px; margin-top: 12px; border: 1px solid rgba(53, 201, 159, .25); border-radius: 16px; background: var(--ok-soft); padding: 11px 12px; color: #168665; font-size: 13px; font-weight: 950; }
+    .match-feedback-mark { display: grid; place-items: center; width: 25px; height: 25px; flex: 0 0 auto; border-radius: 999px; background: var(--ok); color: #fff; font-size: 13px; }
     .match-history { margin-top: 12px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255, 255, 255, .76); padding: 11px; }
     .match-history-head { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; background: transparent; padding: 1px; text-align: left; }
     .match-history-chevron { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 auto; border-radius: 10px; background: var(--bg); color: var(--game); font-size: 15px; font-weight: 1000; transition: transform .18s ease; }
