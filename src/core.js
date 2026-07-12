@@ -28,6 +28,7 @@ const state = {
   fighterGroup: "すべて",
   matchHistoryFilter: "all",
   matchHistoryLimit: 10,
+  matchHistoryOpen: false,
 };
 
 const app = document.getElementById("app");
@@ -362,6 +363,7 @@ function setActiveBoard(boardId) {
   state.fighterGroup = "すべて";
   state.matchHistoryFilter = "all";
   state.matchHistoryLimit = 10;
+  state.matchHistoryOpen = false;
   saveData();
   render();
 }
@@ -556,16 +558,18 @@ function matchHistoryHtml(board) {
   const visible = filtered.slice(0, state.matchHistoryLimit);
 
   return `
-    <section class="match-history" aria-label="対戦履歴">
-      <div class="match-history-head">
+    <section class="match-history ${state.matchHistoryOpen ? "is-open" : ""}" aria-label="対戦履歴">
+      <button class="match-history-head" data-action="toggle-match-history-open" aria-expanded="${state.matchHistoryOpen ? "true" : "false"}" aria-label="対戦履歴を${state.matchHistoryOpen ? "閉じる" : "開く"}">
         <div>
           <div class="match-history-title">対戦履歴</div>
           <div class="match-history-summary">全${history.length}戦 ${wins}勝 ${losses}敗${history.length ? `・勝率${winRate}%` : ""}</div>
         </div>
+        <span class="match-history-chevron" aria-hidden="true">⌄</span>
+      </button>
+      ${state.matchHistoryOpen ? `
         <div class="match-history-filters" aria-label="履歴を絞り込み">
           ${[["all", "すべて"], ["win", "勝ち"], ["loss", "負け"]].map(([value, label]) => `<button class="match-history-filter ${state.matchHistoryFilter === value ? "is-active" : ""}" data-action="filter-match-history" data-filter="${value}" aria-label="履歴：${label}">${label}</button>`).join("")}
         </div>
-      </div>
       ${visible.length ? `
         <div class="match-history-list">
           ${visible.map((match) => `
@@ -579,6 +583,7 @@ function matchHistoryHtml(board) {
       ` : `<div class="match-history-empty">${history.length ? "条件に合う履歴がありません" : "勝敗を記録すると、ここに対戦履歴が並びます"}</div>`}
       ${filtered.length > 10 ? `
         <button class="match-history-more" data-action="toggle-match-history">${state.matchHistoryLimit < filtered.length ? `さらに表示（残り${filtered.length - visible.length}件）` : "10件表示に戻す"}</button>
+      ` : ""}
       ` : ""}
     </section>
   `;
@@ -1079,4 +1084,3 @@ function runSelfTests() {
   console.assert(smashData.boards[0].mode === "smash" && smashData.boards[0].selectedFighter === "カービィ", "smash board settings should survive normalization");
   console.assert(fighterRecord(smashData.boards[0], "カービィ").wins === 1, "fighter records should be derived from linked history");
 }
-
