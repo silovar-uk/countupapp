@@ -486,8 +486,13 @@ function selectFighter(name) {
   if (!SMASH_FIGHTERS.includes(name)) return;
   const board = activeBoard();
   state.lastMatchFeedback = null;
+  state.fighterQuery = "";
+  state.fighterGroup = fighterGroup(name);
   updateBoard(board.id, (current) => ({ ...current, selectedFighter: name }));
   showToast(`${name}を選択しました`);
+  requestAnimationFrame(() => {
+    document.querySelector(".fighter-choice.is-selected")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 }
 
 function normalizeFighterSearch(value) {
@@ -889,7 +894,6 @@ function smashPanelHtml(board) {
     return state.fighterGroup === "すべて" || fighterGroup(fighter) === state.fighterGroup;
   });
   const recent = recentFighters(board);
-  const currentRecord = board.selectedFighter ? fighterRecord(board, board.selectedFighter) : null;
   return `
     <section class="smash-panel" aria-label="対戦相手ファイター">
       <div class="smash-head">
@@ -903,16 +907,6 @@ function smashPanelHtml(board) {
         <div class="match-feedback" role="status">
           <span class="match-feedback-mark">✓</span>
           <span>${escapeHtml(state.lastMatchFeedback.fighter)}戦の${escapeHtml(state.lastMatchFeedback.result)}を記録しました</span>
-        </div>
-      ` : ""}
-      ${board.selectedFighter ? `
-        <div class="smash-command">
-          <div class="smash-command-name">vs ${escapeHtml(board.selectedFighter)}</div>
-          <div class="smash-command-record">この相手との戦績 ${currentRecord.wins}勝 ${currentRecord.losses}敗</div>
-          <div class="smash-quick-actions">
-            <button class="smash-result-btn win" data-action="quick-win">勝ち ＋1</button>
-            <button class="smash-result-btn loss" data-action="quick-loss">負け ＋1</button>
-          </div>
         </div>
       ` : ""}
       ${matchHistoryHtml(board)}
@@ -937,9 +931,22 @@ function smashPanelHtml(board) {
       <div class="fighter-grid">
         ${fighters.length ? fighters.map((fighter) => {
           const record = fighterRecord(board, fighter);
-          return `<button class="fighter-btn ${board.selectedFighter === fighter ? "is-selected" : ""}" data-action="select-fighter" data-fighter="${escapeHtml(fighter)}">
-            ${escapeHtml(fighter)}<span class="fighter-record">${record.wins}勝 ${record.losses}敗</span>
-          </button>`;
+          const selected = board.selectedFighter === fighter;
+          return `<div class="fighter-choice ${selected ? "is-selected" : ""}">
+            <button class="fighter-btn ${selected ? "is-selected" : ""}" data-action="select-fighter" data-fighter="${escapeHtml(fighter)}">
+              ${escapeHtml(fighter)}<span class="fighter-record">${record.wins}勝 ${record.losses}敗</span>
+            </button>
+            ${selected ? `
+              <div class="fighter-inline-summary">
+                <span>vs ${escapeHtml(fighter)}</span>
+                <span class="fighter-inline-record">通算 ${record.wins}勝 ${record.losses}敗</span>
+              </div>
+              <div class="fighter-inline-actions">
+                <button class="smash-result-btn win" data-action="quick-win">勝ち ＋1</button>
+                <button class="smash-result-btn loss" data-action="quick-loss">負け ＋1</button>
+              </div>
+            ` : ""}
+          </div>`;
         }).join("") : `<div class="fighter-empty">該当するファイターがいません</div>`}
       </div>
     </section>
