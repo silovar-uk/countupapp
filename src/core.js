@@ -596,10 +596,10 @@ function matchHistoryHtml(board) {
           ${[["all", "すべて"], ["win", "勝ち"], ["loss", "負け"]].map(([value, label]) => `<button class="match-history-filter ${state.matchHistoryFilter === value ? "is-active" : ""}" data-action="filter-match-history" data-filter="${value}" aria-label="履歴：${label}">${label}</button>`).join("")}
         </div>
       ${visible.length ? `
-        <div class="match-history-list">
+        <div class="match-history-list" role="list">
           ${visible.map((match) => `
-            <div class="match-history-row">
-              <span class="match-result ${match.result}">${match.result === "win" ? "WIN" : "LOSS"}</span>
+            <div class="match-history-row ${match.result}" role="listitem" aria-label="${match.result === "win" ? "勝ち" : "負け"}、${escapeHtml(match.fighter)}、${escapeHtml(formatMatchTime(match.at))}">
+              <span class="match-result ${match.result}" aria-hidden="true">${match.result === "win" ? "✓ WIN" : "× LOSS"}</span>
               <span class="match-opponent">${escapeHtml(match.fighter)}</span>
               <time class="match-time">${escapeHtml(formatMatchTime(match.at))}</time>
             </div>
