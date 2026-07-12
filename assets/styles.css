@@ -615,10 +615,6 @@
     .smash-title { font-size: 16px; font-weight: 1000; }
     .smash-help { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 750; }
     .smash-current { flex: 0 0 auto; border-radius: 999px; background: var(--game-soft); color: #5144c8; padding: 7px 11px; font-size: 12px; font-weight: 950; }
-    .smash-command { margin-top: 12px; border: 1px solid rgba(109, 93, 252, .20); border-radius: 18px; background: linear-gradient(135deg, rgba(109, 93, 252, .12), rgba(59, 130, 246, .08)); padding: 11px; }
-    .smash-command-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #5144c8; font-size: 17px; font-weight: 1000; }
-    .smash-command-record { margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 850; }
-    .smash-quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 9px; }
     .smash-result-btn { min-height: 50px; border-radius: 15px; color: #fff; font-size: 15px; font-weight: 1000; box-shadow: 0 9px 20px rgba(38, 53, 84, .12); }
     .smash-result-btn.win { background: linear-gradient(135deg, #35c99f, #18a97f); }
     .smash-result-btn.loss { background: linear-gradient(135deg, #e87575, #d85c69); }
@@ -664,10 +660,15 @@
     .fighter-recent-row::-webkit-scrollbar { display: none; }
     .fighter-recent-btn { min-width: 112px; min-height: 45px; flex: 0 0 auto; border: 1px solid rgba(109, 93, 252, .16); border-radius: 14px; background: var(--game-soft); color: #5144c8; padding: 7px 10px; text-align: left; font-size: 12px; font-weight: 950; }
     .fighter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 10px; }
-    .fighter-btn { min-height: 48px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink-soft); padding: 7px 5px; font-size: 12px; font-weight: 900; line-height: 1.25; }
+    .fighter-choice { min-width: 0; }
+    .fighter-choice.is-selected { grid-column: 1 / -1; border: 1px solid rgba(109, 93, 252, .24); border-radius: 18px; background: linear-gradient(135deg, rgba(109, 93, 252, .12), rgba(59, 130, 246, .08)); padding: 9px; box-shadow: 0 10px 24px rgba(109, 93, 252, .10); }
+    .fighter-btn { width: 100%; min-height: 48px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink-soft); padding: 7px 5px; font-size: 12px; font-weight: 900; line-height: 1.25; }
     .fighter-btn.is-selected { border-color: var(--game); background: var(--game-soft); color: #5144c8; box-shadow: 0 0 0 2px rgba(109, 93, 252, .10); }
     .fighter-record { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
     .fighter-btn.is-selected .fighter-record { color: #6d5dfc; }
+    .fighter-inline-summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 9px 2px 0; color: #5144c8; font-size: 14px; font-weight: 1000; }
+    .fighter-inline-record { color: var(--muted); font-size: 11px; font-weight: 850; white-space: nowrap; }
+    .fighter-inline-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
     .fighter-empty { grid-column: 1 / -1; padding: 18px; color: var(--muted); text-align: center; font-weight: 850; }
 
     .counter-card {
