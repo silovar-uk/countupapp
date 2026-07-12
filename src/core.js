@@ -29,6 +29,7 @@ const state = {
   matchHistoryFilter: "all",
   matchHistoryLimit: 10,
   matchHistoryOpen: false,
+  lastMatchFeedback: null,
 };
 
 const app = document.getElementById("app");
@@ -364,6 +365,7 @@ function setActiveBoard(boardId) {
   state.matchHistoryFilter = "all";
   state.matchHistoryLimit = 10;
   state.matchHistoryOpen = false;
+  state.lastMatchFeedback = null;
   saveData();
   render();
 }
@@ -423,15 +425,34 @@ function changeCounter(counterId, diff) {
   const result = changeCounterValue(board.counters, counterId, diff);
   if (result.actualDiff === 0) return;
 
+  const targetCounter = board.counters.find((counter) => counter.id === counterId);
+  const isSmashResult = board.mode === "smash"
+    && diff > 0
+    && board.selectedFighter
+    && targetCounter
+    && (targetCounter.label.includes("勝") || targetCounter.label.includes("負"));
+  const feedback = isSmashResult
+    ? { boardId: board.id, fighter: board.selectedFighter, result: targetCounter.label.includes("勝") ? "勝ち" : "負け" }
+    : null;
+
   vibrate(diff > 0 ? 7 : 12);
   state.lastAction = { boardId: board.id, counterId, diff: result.actualDiff };
-  updateBoard(board.id, (current) => applyCounterChangeToBoard(current, counterId, diff));
+  if (feedback) {
+    state.lastMatchFeedback = feedback;
+    state.fighterQuery = "";
+  }
+  updateBoard(board.id, (current) => {
+    const updated = applyCounterChangeToBoard(current, counterId, diff);
+    return feedback ? { ...updated, selectedFighter: "" } : updated;
+  });
+  if (feedback) showToast(`${feedback.fighter}戦の${feedback.result}を記録しました`);
 }
 
 function undo() {
   if (!state.lastAction) return;
   const action = state.lastAction;
   state.lastAction = null;
+  state.lastMatchFeedback = null;
   vibrate(20);
   updateBoard(action.boardId, (board) => applyCounterChangeToBoard(board, action.counterId, -action.diff));
   showToast("直前の操作を戻しました");
@@ -464,6 +485,7 @@ function addPresetBoard(presetKey) {
 function selectFighter(name) {
   if (!SMASH_FIGHTERS.includes(name)) return;
   const board = activeBoard();
+  state.lastMatchFeedback = null;
   updateBoard(board.id, (current) => ({ ...current, selectedFighter: name }));
   showToast(`${name}を選択しました`);
 }
@@ -873,6 +895,12 @@ function smashPanelHtml(board) {
         </div>
         <div class="smash-current">${board.selectedFighter ? escapeHtml(board.selectedFighter) : "未選択"}</div>
       </div>
+      ${state.lastMatchFeedback?.boardId === board.id ? `
+        <div class="match-feedback" role="status">
+          <span class="match-feedback-mark">✓</span>
+          <span>${escapeHtml(state.lastMatchFeedback.fighter)}戦の${escapeHtml(state.lastMatchFeedback.result)}を記録しました</span>
+        </div>
+      ` : ""}
       ${board.selectedFighter ? `
         <div class="smash-command">
           <div class="smash-command-name">vs ${escapeHtml(board.selectedFighter)}</div>
