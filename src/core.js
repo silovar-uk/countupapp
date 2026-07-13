@@ -919,7 +919,7 @@ function smashPanelHtml(board) {
       </div>
       ${recent.length ? `
         <div class="fighter-recent">
-          <div class="fighter-section-label">最近使ったファイター</div>
+          <div class="fighter-section-label">最近対戦したファイター</div>
           <div class="fighter-recent-row">
             ${recent.map((fighter) => {
               const record = fighterRecord(board, fighter);
@@ -1089,7 +1089,8 @@ function runSelfTests() {
   console.assert(calcTargetTotal([{ id: "x", label: "自由項目", value: 5, includeInTotal: true }, { id: "y", label: "観察メモ", value: 9, includeInTotal: false }]) === 5, "target total should support arbitrary selected counters");
   console.assert(countTargetCounters(counters) === 2, "countTargetCounters should count included counters");
   console.assert(PRESETS.find((preset) => preset.key === "smash").counters.length === 2, "smash preset should start with win/loss only");
-  console.assert(SMASH_FIGHTERS.length === 89 && new Set(SMASH_FIGHTERS).size === 89, "smash fighter list should contain 89 unique entries");
+  console.assert(SMASH_FIGHTERS.length === 90 && new Set(SMASH_FIGHTERS).size === 90, "smash fighter list should contain 90 unique entries");
+  console.assert(SMASH_FIGHTERS.includes("ルキナ") && fighterGroup("ルキナ") === "ら", "Lucina should be available in the ra-row fighter list");
   console.assert(normalizeFighterSearch(" カービィ ") === normalizeFighterSearch("かーびぃ"), "fighter search should ignore script and whitespace differences");
   console.assert(fighterGroup("Wii Fit トレーナー") === "あ" && fighterGroup("勇者") === "や" && fighterGroup("リドリー") === "ら", "fighter groups should follow Japanese reading order, including kanji names");
   console.assert(recentFighters({ history: [{ fighter: "ゼルダ" }, { fighter: "カービィ" }, { fighter: "ゼルダ" }] }).join(",") === "ゼルダ,カービィ", "recent fighters should be unique and newest first");
