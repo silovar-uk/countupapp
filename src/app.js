@@ -1,6 +1,19 @@
 "use strict";
 
 // Event wiring stays separate from core logic so interaction changes do not risk storage and migration code.
+let fighterSearchIsComposing = false;
+
+function refreshFighterSearch(input) {
+  const selectionStart = input.selectionStart ?? input.value.length;
+  state.fighterQuery = input.value;
+  render();
+  requestAnimationFrame(() => {
+    const next = document.querySelector("[data-input='fighter-search']");
+    next?.focus();
+    next?.setSelectionRange(selectionStart, selectionStart);
+  });
+}
+
 app.addEventListener("click", (event) => {
   const target = event.target.closest("button");
   if (!target) return;
@@ -73,6 +86,26 @@ app.addEventListener("keydown", (event) => {
   }
 });
 
+app.addEventListener("compositionstart", (event) => {
+  if (event.target instanceof HTMLInputElement && event.target.dataset.input === "fighter-search") {
+    fighterSearchIsComposing = true;
+  }
+});
+
+app.addEventListener("compositionend", (event) => {
+  const input = event.target;
+  if (!(input instanceof HTMLInputElement) || input.dataset.input !== "fighter-search") return;
+  fighterSearchIsComposing = false;
+  const value = input.value;
+  const selectionStart = input.selectionStart ?? value.length;
+  requestAnimationFrame(() => {
+    if (state.fighterQuery === value) return;
+    const current = document.querySelector("[data-input='fighter-search']");
+    if (current) current.setSelectionRange(selectionStart, selectionStart);
+    refreshFighterSearch(current || input);
+  });
+});
+
 app.addEventListener("input", (event) => {
   const input = event.target;
   if (input instanceof HTMLTextAreaElement && input.dataset.input === "memo") {
@@ -82,14 +115,8 @@ app.addEventListener("input", (event) => {
 
   if (input instanceof HTMLInputElement) {
     if (input.dataset.input === "fighter-search") {
-      state.fighterQuery = input.value;
-      const selectionStart = input.selectionStart;
-      render();
-      requestAnimationFrame(() => {
-        const next = document.querySelector("[data-input='fighter-search']");
-        next?.focus();
-        next?.setSelectionRange(selectionStart, selectionStart);
-      });
+      if (fighterSearchIsComposing || event.isComposing || event.inputType === "insertCompositionText") return;
+      refreshFighterSearch(input);
       return;
     }
     if (input.dataset.input === "board-name") state.draftBoardName = input.value;
